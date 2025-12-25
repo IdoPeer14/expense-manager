@@ -13,6 +13,9 @@
     "error": "Error",
     "success": "Success"
   },
+  "app": {
+    "title": "Expense & Invoice Manager"
+  },
   "auth": {
     "login": "Login",
     "register": "Register",

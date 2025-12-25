@@ -197,6 +197,10 @@ app.UseHttpsRedirection();
 // CORS - Must be before Authentication/Authorization
 app.UseCors("AllowFrontend");
 
+// Serve static files (for SPA)
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 // Authentication & Authorization
 app.UseAuthentication();
 app.UseAuthorization();
@@ -217,5 +221,9 @@ app.MapGet("/db-check", async (AppDbContext db) =>
 
 // Controllers
 app.MapControllers();
+
+// SPA Fallback Routing - Serve index.html for all non-API routes
+// This allows direct URL access and page refresh to work correctly
+app.MapFallbackToFile("index.html");
 
 app.Run();

@@ -21,7 +21,7 @@ const Header = () => {
           <span className="material-symbols-outlined text-2xl">account_balance_wallet</span>
         </div>
         <h1 className="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight">
-          Expense & Invoice Manager
+          {t('app.title')}
         </h1>
       </div>
 
