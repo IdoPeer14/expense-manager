@@ -8,6 +8,7 @@ import { registerSchema } from '../utils/validation';
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
 import ErrorAlert from '../components/common/ErrorAlert';
+import LanguageSwitcher from '../components/common/LanguageSwitcher';
 
 const RegisterPage = () => {
   const { t } = useTranslation();
@@ -36,7 +37,12 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 bg-background-light dark:bg-background-dark">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 bg-background-light dark:bg-background-dark relative">
+      {/* Language Switcher - Top Right */}
+      <div className="absolute top-6 right-6 z-20">
+        <LanguageSwitcher />
+      </div>
+
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="flex justify-center mb-8">

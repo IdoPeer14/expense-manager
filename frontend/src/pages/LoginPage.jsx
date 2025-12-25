@@ -8,6 +8,7 @@ import { loginSchema } from '../utils/validation';
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
 import ErrorAlert from '../components/common/ErrorAlert';
+import LanguageSwitcher from '../components/common/LanguageSwitcher';
 
 const LoginPage = () => {
   const { t } = useTranslation();
@@ -41,6 +42,11 @@ const LoginPage = () => {
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-primary/5 dark:bg-primary/10 rounded-full blur-3xl opacity-70"></div>
         <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-400/5 dark:bg-blue-600/10 rounded-full blur-3xl opacity-70"></div>
+      </div>
+
+      {/* Language Switcher - Top Right */}
+      <div className="absolute top-6 right-6 z-20">
+        <LanguageSwitcher />
       </div>
 
       {/* Login Card */}
