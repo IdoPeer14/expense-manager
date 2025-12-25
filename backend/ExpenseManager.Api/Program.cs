@@ -106,12 +106,32 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 // --------------------
-// Auto-apply migrations (Render deployment)
+// Auto-create database schema (Render deployment)
 // --------------------
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+    try
+    {
+        // EnsureCreated() creates all tables if they don't exist
+        // This is simpler than migrations for initial deployment
+        var created = db.Database.EnsureCreated();
+        if (created)
+        {
+            logger.LogInformation("Database schema created successfully.");
+        }
+        else
+        {
+            logger.LogInformation("Database schema already exists.");
+        }
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Failed to create database schema.");
+        throw;
+    }
 }
 
 // --------------------
