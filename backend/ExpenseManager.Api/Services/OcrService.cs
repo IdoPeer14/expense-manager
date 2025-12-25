@@ -72,13 +72,30 @@ public class OcrService
             try
             {
                 // Initialize Tesseract with Hebrew and English
-                // tessdata location in Docker: /usr/share/tesseract-ocr/4.00/tessdata
-                var tessdataPath = "/usr/share/tesseract-ocr/4.00/tessdata";
-
-                // Fallback for local development (macOS/Windows)
-                if (!Directory.Exists(tessdataPath))
+                // Try multiple possible tessdata locations
+                var possiblePaths = new[]
                 {
-                    tessdataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tessdata");
+                    "/usr/share/tessdata",                      // Common location on Linux
+                    "/usr/share/tesseract-ocr/5.00/tessdata",   // Tesseract 5.x (Debian/Ubuntu)
+                    "/usr/share/tesseract-ocr/4.00/tessdata",   // Tesseract 4.x
+                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tessdata")  // Local development
+                };
+
+                string? tessdataPath = null;
+                foreach (var path in possiblePaths)
+                {
+                    if (Directory.Exists(path))
+                    {
+                        tessdataPath = path;
+                        _logger.LogInformation("Found tessdata at: {TessdataPath}", path);
+                        break;
+                    }
+                }
+
+                if (tessdataPath == null)
+                {
+                    throw new DirectoryNotFoundException(
+                        $"Tessdata directory not found. Searched: {string.Join(", ", possiblePaths)}");
                 }
 
                 using var engine = new TesseractEngine(tessdataPath, "heb+eng", EngineMode.Default);

@@ -41,7 +41,7 @@ LOGIN_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/api/auth/login" 
     -d "{\"email\":\"$TEST_EMAIL\",\"password\":\"$TEST_PASSWORD\"}")
 
 HTTP_CODE=$(echo "$LOGIN_RESPONSE" | tail -n1)
-BODY=$(echo "$LOGIN_RESPONSE" | head -n -1)
+BODY=$(echo "$LOGIN_RESPONSE" | sed '$d')
 
 if [ "$HTTP_CODE" = "200" ]; then
     TOKEN=$(extract_json_field "$BODY" "token")
@@ -95,7 +95,7 @@ UPLOAD_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/api/documents" 
     -F "file=@$TEST_FILE")
 
 HTTP_CODE=$(echo "$UPLOAD_RESPONSE" | tail -n1)
-BODY=$(echo "$UPLOAD_RESPONSE" | head -n -1)
+BODY=$(echo "$UPLOAD_RESPONSE" | sed '$d')
 
 echo "Response: $BODY"
 echo "HTTP Code: $HTTP_CODE"
@@ -118,7 +118,7 @@ ANALYZE_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/api/documents/
     -H "Authorization: Bearer $TOKEN")
 
 HTTP_CODE=$(echo "$ANALYZE_RESPONSE" | tail -n1)
-BODY=$(echo "$ANALYZE_RESPONSE" | head -n -1)
+BODY=$(echo "$ANALYZE_RESPONSE" | sed '$d')
 
 echo ""
 echo "Response: $BODY"
