@@ -124,6 +124,7 @@ CREATE_EXPENSE_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/api/exp
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $TOKEN" \
     -d '{
+        "documentId": null,
         "businessName": "Test Restaurant",
         "businessId": "123456789",
         "invoiceNumber": "INV-001",
