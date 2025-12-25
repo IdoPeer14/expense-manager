@@ -1,5 +1,6 @@
 using ExpenseManager.Api.Data;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,17 +15,28 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Resolve connection string:
-// 1. From appsettings.json (local)
-// 2. From environment variable DATABASE_URL (Render)
-var connectionString =
+// --------------------
+// Database connection
+// --------------------
+
+// Prefer DATABASE_URL (Render), fallback to appsettings (local)
+var rawConnectionString =
     builder.Configuration.GetConnectionString("DefaultConnection")
     ?? Environment.GetEnvironmentVariable("DATABASE_URL");
 
-if (string.IsNullOrWhiteSpace(connectionString))
+if (string.IsNullOrWhiteSpace(rawConnectionString))
 {
     throw new InvalidOperationException("Database connection string not configured.");
 }
+
+// Convert postgres URL -> Npgsql connection string if needed
+var connectionString = rawConnectionString.StartsWith("postgres")
+    ? new NpgsqlConnectionStringBuilder(rawConnectionString)
+    {
+        SslMode = SslMode.Require,
+        TrustServerCertificate = true
+    }.ConnectionString
+    : rawConnectionString;
 
 // EF Core + PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -44,7 +56,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Authorization (JWT later)
+// Auth will be added later (JWT)
 app.UseAuthorization();
 
 // --------------------

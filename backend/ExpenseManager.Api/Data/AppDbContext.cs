@@ -9,6 +9,6 @@ namespace ExpenseManager.Api.Data
         {
         }
 
-        // DbSet<> יתווסף בהמשך
+        // DbSet<> יתווספו בשלב ה־Models
     }
 }
