@@ -3,7 +3,6 @@ using System.Text.Json;
 using ExpenseManager.Api.Data;
 using ExpenseManager.Api.Models;
 using Microsoft.EntityFrameworkCore;
-using Tesseract;
 
 namespace ExpenseManager.Api.Services;
 
@@ -103,60 +102,51 @@ public class OcrService
         {
             try
             {
-                // Initialize Tesseract with Hebrew and English
-                // First check TESSDATA_PREFIX environment variable
-                var envTessdata = Environment.GetEnvironmentVariable("TESSDATA_PREFIX");
+                _logger.LogInformation("Running Tesseract OCR on: {FilePath}", filePath);
 
-                var possiblePaths = new List<string>();
-
-                // Add env variable path first if set
-                if (!string.IsNullOrEmpty(envTessdata))
+                // Use tesseract command-line tool
+                // Output to stdout with Hebrew and English languages
+                var startInfo = new ProcessStartInfo
                 {
-                    possiblePaths.Add(envTessdata);
+                    FileName = "tesseract",
+                    Arguments = $"\"{filePath}\" stdout -l heb+eng",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                _logger.LogDebug("Tesseract command: {Command} {Arguments}", startInfo.FileName, startInfo.Arguments);
+
+                using var process = Process.Start(startInfo);
+                if (process == null)
+                {
+                    throw new InvalidOperationException("Failed to start tesseract process");
                 }
 
-                // Add standard locations
-                possiblePaths.AddRange(new[]
-                {
-                    "/opt/homebrew/share/tessdata",             // macOS Homebrew (Apple Silicon)
-                    "/usr/local/share/tessdata",                // macOS Homebrew (Intel)
-                    "/usr/share/tesseract-ocr/5/tessdata",      // Tesseract 5.x on Debian 12
-                    "/usr/share/tesseract-ocr/tessdata",        // Standard Debian/Ubuntu location (apt install)
-                    "/usr/share/tessdata",                      // Alternative Linux location
-                    "/usr/share/tesseract-ocr/5.00/tessdata",   // Versioned Tesseract 5.x (alternative)
-                    "/usr/share/tesseract-ocr/4.00/tessdata",   // Versioned Tesseract 4.x
-                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tessdata")  // Custom location
-                });
+                // Read output
+                var output = process.StandardOutput.ReadToEnd();
+                var error = process.StandardError.ReadToEnd();
+                process.WaitForExit();
 
-                string? tessdataPath = null;
-                foreach (var path in possiblePaths)
+                if (process.ExitCode != 0)
                 {
-                    if (Directory.Exists(path))
-                    {
-                        tessdataPath = path;
-                        _logger.LogInformation("Found tessdata at: {TessdataPath}", path);
-                        break;
-                    }
-                    else
-                    {
-                        _logger.LogDebug("Tessdata not found at: {Path}", path);
-                    }
+                    _logger.LogError("Tesseract failed with exit code {ExitCode}. Error: {Error}",
+                        process.ExitCode, error);
+                    throw new InvalidOperationException(
+                        $"Tesseract failed with exit code {process.ExitCode}. Error: {error}");
                 }
 
-                if (tessdataPath == null)
+                if (string.IsNullOrWhiteSpace(output))
                 {
-                    throw new DirectoryNotFoundException(
-                        $"Tessdata directory not found. TESSDATA_PREFIX={envTessdata}. Searched: {string.Join(", ", possiblePaths)}");
+                    _logger.LogWarning("Tesseract returned empty output for file: {FilePath}", filePath);
+                }
+                else
+                {
+                    _logger.LogInformation("Tesseract successfully extracted {Length} characters", output.Length);
                 }
 
-                using var engine = new TesseractEngine(tessdataPath, "heb+eng", EngineMode.Default);
-
-                using var img = Pix.LoadFromFile(filePath);
-                using var page = engine.Process(img);
-
-                var text = page.GetText();
-
-                return text;
+                return output;
             }
             catch (Exception ex)
             {

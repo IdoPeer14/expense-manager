@@ -32,10 +32,16 @@ RUN apt-get update && apt-get install -y \
 # Tesseract 5.x on Debian 12 (Bookworm) - confirmed by build logs
 ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
 
-# Debug: Check where tessdata actually is
+# Debug: Check Tesseract installation and native libraries
 RUN echo "=== Checking Tesseract installation ===" && \
     tesseract --version && \
+    echo "--- Tessdata files ---" && \
     find /usr -name "*.traineddata" 2>/dev/null | head -10 && \
+    echo "--- Native libraries ---" && \
+    find /usr -name "libtesseract*" 2>/dev/null && \
+    find /usr -name "liblept*" 2>/dev/null && \
+    echo "--- Library dependencies ---" && \
+    ldd /usr/bin/tesseract | grep -E "(tesseract|lept)" && \
     echo "=== End Tesseract check ==="
 
 COPY --from=build /app/out .
