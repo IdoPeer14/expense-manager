@@ -19,11 +19,13 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 
 # Install Tesseract OCR with Hebrew and English language packs
+# Also install poppler-utils for PDF-to-image conversion
 RUN apt-get update && apt-get install -y \
     tesseract-ocr \
     tesseract-ocr-eng \
     tesseract-ocr-heb \
     libtesseract-dev \
+    poppler-utils \
     && rm -rf /var/lib/apt/lists/*
 
 # Set TESSDATA_PREFIX environment variable for Tesseract
