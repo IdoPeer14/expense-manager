@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useExpenses, useUpdateExpense, useDeleteExpense } from '../hooks/useExpenses';
 import ExpenseFilters from '../components/expenses/ExpenseFilters';
 import ExpenseTable from '../components/expenses/ExpenseTable';
 
 const ExpensesTab = () => {
+  const { t } = useTranslation();
   const [filters, setFilters] = useState({});
   const { data, isLoading } = useExpenses(filters);
   const updateMutation = useUpdateExpense();
@@ -28,7 +30,7 @@ const ExpensesTab = () => {
   };
 
   const handleDelete = async (expenseId) => {
-    if (confirm('Are you sure you want to delete this expense?')) {
+    if (confirm(t('expenses.deleteConfirm'))) {
       await deleteMutation.mutateAsync(expenseId);
     }
   };
@@ -39,7 +41,7 @@ const ExpensesTab = () => {
       <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
         <div className="flex items-center gap-2 text-slate-800 dark:text-slate-200 mb-4">
           <span className="material-symbols-outlined text-[20px]">filter_list</span>
-          <h2 className="text-base font-bold">Filter Expenses</h2>
+          <h2 className="text-base font-bold">{t('expenses.title')}</h2>
         </div>
         <ExpenseFilters
           onApply={handleApplyFilters}

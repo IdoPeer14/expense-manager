@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Select from '../common/Select';
 import { EXPENSE_CATEGORIES } from '../../utils/constants';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 
 const ExpenseTableRow = ({ expense, onCategoryChange, onDelete, updating, deleting }) => {
+  const { t } = useTranslation();
   const [category, setCategory] = useState(expense.category);
 
   const handleCategoryChange = async (e) => {
@@ -41,13 +43,13 @@ const ExpenseTableRow = ({ expense, onCategoryChange, onDelete, updating, deleti
         <div className="flex items-center gap-3">
           <div
             className={`flex items-center justify-center w-10 h-10 rounded-full text-white font-bold text-sm ${getAvatarColor(
-              expense.vendorName || 'Unknown'
+              expense.vendorName || t('expenses.unknownVendor')
             )}`}
           >
             {getInitials(expense.vendorName || 'UK')}
           </div>
           <span className="font-medium text-slate-900 dark:text-white">
-            {expense.vendorName || 'Unknown Vendor'}
+            {expense.vendorName || t('expenses.unknownVendor')}
           </span>
         </div>
       </td>
@@ -79,7 +81,7 @@ const ExpenseTableRow = ({ expense, onCategoryChange, onDelete, updating, deleti
           onClick={() => onDelete(expense.id)}
           disabled={deleting}
           className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors disabled:opacity-50"
-          title="Delete expense"
+          title={t('expenses.deleteTitle')}
         >
           <span className="material-symbols-outlined text-[20px]">delete</span>
         </button>

@@ -11,7 +11,11 @@
     "apply": "החל",
     "loading": "טוען...",
     "error": "שגיאה",
-    "success": "הצלחה"
+    "success": "הצלחה",
+    "selectOption": "בחר אפשרות",
+    "switchToHebrew": "עבור לעברית",
+    "switchToEnglish": "עבור לאנגלית",
+    "pdfLoadError": "טעינת קובץ PDF נכשלה"
   },
   "app": {
     "title": "מנהל הוצאות וחשבוניות"
@@ -51,7 +55,12 @@
     "preview": "תצוגה מקדימה",
     "uploadInstruction": "העלה ועבד חשבונית כדי לראות את הנתונים שחולצו כאן",
     "uploadError": "שגיאת העלאה",
-    "successMessage": "ההוצאה נשמרה בהצלחה!"
+    "successMessage": "ההוצאה נשמרה בהצלחה!",
+    "noFileSelected": "לא נבחר קובץ",
+    "invalidFileType": "סוג קובץ לא חוקי. אנא העלה קבצי PDF, JPG או PNG.",
+    "fileTooLarge": "הקובץ גדול מדי. הגודל המקסימלי הוא {{size}}MB.",
+    "processFailed": "עיבוד החשבונית נכשל. אנא נסה שוב.",
+    "saveFailed": "שמירת ההוצאה נכשלה. אנא נסה שוב."
   },
   "form": {
     "vendorName": "שם הספק",
@@ -90,7 +99,9 @@
     "amount": "סכום",
     "invoiceNumber": "מס' חשבונית",
     "actions": "פעולות",
-    "deleteConfirm": "האם אתה בטוח שברצונך למחוק הוצאה זו?"
+    "deleteConfirm": "האם אתה בטוח שברצונך למחוק הוצאה זו?",
+    "unknownVendor": "ספק לא ידוע",
+    "deleteTitle": "מחק הוצאה"
   },
   "categories": {
     "all": "כל הקטגוריות",

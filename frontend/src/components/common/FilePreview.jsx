@@ -48,7 +48,7 @@ const FilePreview = ({ file, className = '' }) => {
 
   const onDocumentLoadError = (error) => {
     console.error('Error loading PDF:', error);
-    setError('Failed to load PDF file');
+    setError(t('common.pdfLoadError'));
   };
 
   const goToPrevPage = () => {

@@ -21,17 +21,17 @@ const UploadTab = () => {
   const createExpenseMutation = useCreateExpense();
 
   const validateFile = (file) => {
-    if (!file) return 'No file selected';
+    if (!file) return t('upload.noFileSelected');
 
     // Check file type
     const allowedTypes = Object.keys(ACCEPTED_FILE_TYPES);
     if (!allowedTypes.includes(file.type)) {
-      return 'Invalid file type. Please upload PDF, JPG, or PNG files.';
+      return t('upload.invalidFileType');
     }
 
     // Check file size
     if (file.size > MAX_FILE_SIZE) {
-      return `File too large. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB.`;
+      return t('upload.fileTooLarge', { size: MAX_FILE_SIZE / 1024 / 1024 });
     }
 
     return null;
@@ -101,7 +101,7 @@ const UploadTab = () => {
 
       setExtractedData(analyzeResult);
     } catch (err) {
-      setError(err.message || 'Failed to process invoice. Please try again.');
+      setError(err.message || t('upload.processFailed'));
     }
   };
 
@@ -125,7 +125,7 @@ const UploadTab = () => {
       };
 
       await createExpenseMutation.mutateAsync(expenseData);
-      setSuccess('Expense saved successfully!');
+      setSuccess(t('upload.successMessage'));
 
       // Reset form after short delay
       setTimeout(() => {
@@ -134,7 +134,7 @@ const UploadTab = () => {
         setSuccess('');
       }, 2000);
     } catch (err) {
-      setError(err.message || 'Failed to save expense. Please try again.');
+      setError(err.message || t('upload.saveFailed'));
     }
   };
 

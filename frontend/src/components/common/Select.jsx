@@ -1,4 +1,5 @@
 import { forwardRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 
 const Select = forwardRef(({
@@ -6,10 +7,12 @@ const Select = forwardRef(({
   options = [],
   error = '',
   required = false,
-  placeholder = 'Select an option',
+  placeholder,
   className = '',
   ...props
 }, ref) => {
+  const { t } = useTranslation();
+  const defaultPlaceholder = placeholder ?? t('common.selectOption');
   return (
     <div className="space-y-1.5 w-full">
       {label && (
@@ -35,8 +38,8 @@ const Select = forwardRef(({
           )}
           {...props}
         >
-          {placeholder && (
-            <option value="">{placeholder}</option>
+          {defaultPlaceholder && (
+            <option value="">{defaultPlaceholder}</option>
           )}
           {options.map((option) => (
             <option key={option.value} value={option.value}>

@@ -16,11 +16,13 @@ const LanguageSwitcher = () => {
     i18n.changeLanguage(newLang);
   };
 
+  const { t } = useTranslation();
+
   return (
     <button
       onClick={toggleLanguage}
       className="flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-sm font-medium"
-      title={i18n.language === 'en' ? 'Switch to Hebrew' : 'עבור לאנגלית'}
+      title={i18n.language === 'en' ? t('common.switchToHebrew') : t('common.switchToEnglish')}
     >
       <span className="material-symbols-outlined text-[20px]">language</span>
       <span>{i18n.language === 'en' ? 'עב' : 'EN'}</span>
