@@ -75,9 +75,10 @@ public class OcrService
                 // Try multiple possible tessdata locations
                 var possiblePaths = new[]
                 {
-                    "/usr/share/tessdata",                      // Common location on Linux
-                    "/usr/share/tesseract-ocr/5.00/tessdata",   // Tesseract 5.x (Debian/Ubuntu)
-                    "/usr/share/tesseract-ocr/4.00/tessdata",   // Tesseract 4.x
+                    "/usr/share/tesseract-ocr/tessdata",        // Standard Debian/Ubuntu location (apt install)
+                    "/usr/share/tessdata",                      // Alternative Linux location
+                    "/usr/share/tesseract-ocr/5.00/tessdata",   // Versioned Tesseract 5.x
+                    "/usr/share/tesseract-ocr/4.00/tessdata",   // Versioned Tesseract 4.x
                     Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tessdata")  // Local development
                 };
 
