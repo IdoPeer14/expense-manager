@@ -113,25 +113,46 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
+    logger.LogWarning("===== STARTING DATABASE SCHEMA INITIALIZATION =====");
+
     try
     {
-        // EnsureCreated() creates all tables if they don't exist
-        // This is simpler than migrations for initial deployment
-        var created = db.Database.EnsureCreated();
-        if (created)
+        logger.LogWarning("Testing database connection...");
+        var canConnect = await db.Database.CanConnectAsync();
+        logger.LogWarning($"Database connection test result: {canConnect}");
+
+        if (canConnect)
         {
-            logger.LogInformation("Database schema created successfully.");
+            logger.LogWarning("Creating database schema...");
+            // EnsureCreated() creates all tables if they don't exist
+            var created = db.Database.EnsureCreated();
+
+            if (created)
+            {
+                logger.LogWarning("✓ Database schema created successfully!");
+            }
+            else
+            {
+                logger.LogWarning("Database schema already exists.");
+            }
+
+            // Verify tables were created
+            logger.LogWarning("Verifying tables exist...");
+            var usersCount = await db.Users.CountAsync();
+            logger.LogWarning($"Users table exists. Current count: {usersCount}");
         }
         else
         {
-            logger.LogInformation("Database schema already exists.");
+            logger.LogError("Cannot connect to database!");
         }
     }
     catch (Exception ex)
     {
-        logger.LogError(ex, "Failed to create database schema.");
+        logger.LogError(ex, "FATAL: Failed to create database schema!");
         throw;
     }
+
+    logger.LogWarning("===== DATABASE SCHEMA INITIALIZATION COMPLETE =====");
 }
 
 // --------------------

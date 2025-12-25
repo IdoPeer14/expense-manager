@@ -60,7 +60,7 @@ REGISTER_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/api/auth/regi
     -d "{\"email\":\"$TEST_EMAIL\",\"password\":\"$TEST_PASSWORD\"}")
 
 HTTP_CODE=$(echo "$REGISTER_RESPONSE" | tail -n1)
-BODY=$(echo "$REGISTER_RESPONSE" | head -n -1)
+BODY=$(echo "$REGISTER_RESPONSE" | sed '$d')
 
 echo "Response: $BODY"
 echo "HTTP Code: $HTTP_CODE"
@@ -83,13 +83,15 @@ LOGIN_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/api/auth/login" 
     -d "{\"email\":\"$TEST_EMAIL\",\"password\":\"$TEST_PASSWORD\"}")
 
 HTTP_CODE=$(echo "$LOGIN_RESPONSE" | tail -n1)
-BODY=$(echo "$LOGIN_RESPONSE" | head -n -1)
+BODY=$(echo "$LOGIN_RESPONSE" | sed '$d')
 
 echo "Response: $BODY"
 echo "HTTP Code: $HTTP_CODE"
 
 if [ "$HTTP_CODE" = "200" ]; then
+    TOKEN=$(extract_json_field "$BODY" "token")
     print_result 0 "User login"
+    echo -e "${YELLOW}Token updated from login:${NC} ${TOKEN:0:50}..."
 else
     print_result 1 "User login"
     exit 1
@@ -103,7 +105,7 @@ ME_RESPONSE=$(curl -s -w "\n%{http_code}" -X GET "$BASE_URL/api/auth/me" \
     -H "Authorization: Bearer $TOKEN")
 
 HTTP_CODE=$(echo "$ME_RESPONSE" | tail -n1)
-BODY=$(echo "$ME_RESPONSE" | head -n -1)
+BODY=$(echo "$ME_RESPONSE" | sed '$d')
 
 echo "Response: $BODY"
 echo "HTTP Code: $HTTP_CODE"
@@ -134,7 +136,7 @@ CREATE_EXPENSE_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/api/exp
     }')
 
 HTTP_CODE=$(echo "$CREATE_EXPENSE_RESPONSE" | tail -n1)
-BODY=$(echo "$CREATE_EXPENSE_RESPONSE" | head -n -1)
+BODY=$(echo "$CREATE_EXPENSE_RESPONSE" | sed '$d')
 
 echo "Response: $BODY"
 echo "HTTP Code: $HTTP_CODE"
@@ -156,7 +158,7 @@ GET_EXPENSES_RESPONSE=$(curl -s -w "\n%{http_code}" -X GET "$BASE_URL/api/expens
     -H "Authorization: Bearer $TOKEN")
 
 HTTP_CODE=$(echo "$GET_EXPENSES_RESPONSE" | tail -n1)
-BODY=$(echo "$GET_EXPENSES_RESPONSE" | head -n -1)
+BODY=$(echo "$GET_EXPENSES_RESPONSE" | sed '$d')
 
 echo "Response: $BODY"
 echo "HTTP Code: $HTTP_CODE"
@@ -175,7 +177,7 @@ FILTER_RESPONSE=$(curl -s -w "\n%{http_code}" -X GET "$BASE_URL/api/expenses?cat
     -H "Authorization: Bearer $TOKEN")
 
 HTTP_CODE=$(echo "$FILTER_RESPONSE" | tail -n1)
-BODY=$(echo "$FILTER_RESPONSE" | head -n -1)
+BODY=$(echo "$FILTER_RESPONSE" | sed '$d')
 
 echo "Response: $BODY"
 echo "HTTP Code: $HTTP_CODE"
@@ -197,7 +199,7 @@ if [ -n "$EXPENSE_ID" ]; then
         -d '{"category": "OPERATIONS"}')
 
     HTTP_CODE=$(echo "$UPDATE_RESPONSE" | tail -n1)
-    BODY=$(echo "$UPDATE_RESPONSE" | head -n -1)
+    BODY=$(echo "$UPDATE_RESPONSE" | sed '$d')
 
     echo "Response: $BODY"
     echo "HTTP Code: $HTTP_CODE"
@@ -216,7 +218,7 @@ if [ -n "$EXPENSE_ID" ]; then
         -H "Authorization: Bearer $TOKEN")
 
     HTTP_CODE=$(echo "$DELETE_RESPONSE" | tail -n1)
-    BODY=$(echo "$DELETE_RESPONSE" | head -n -1)
+    BODY=$(echo "$DELETE_RESPONSE" | sed '$d')
 
     echo "Response: $BODY"
     echo "HTTP Code: $HTTP_CODE"
@@ -237,7 +239,7 @@ INVALID_LOGIN_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/api/auth
     -d "{\"email\":\"$TEST_EMAIL\",\"password\":\"WrongPassword123\"}")
 
 HTTP_CODE=$(echo "$INVALID_LOGIN_RESPONSE" | tail -n1)
-BODY=$(echo "$INVALID_LOGIN_RESPONSE" | head -n -1)
+BODY=$(echo "$INVALID_LOGIN_RESPONSE" | sed '$d')
 
 echo "Response: $BODY"
 echo "HTTP Code: $HTTP_CODE"
@@ -255,7 +257,7 @@ echo "========================================="
 UNAUTH_RESPONSE=$(curl -s -w "\n%{http_code}" -X GET "$BASE_URL/api/expenses")
 
 HTTP_CODE=$(echo "$UNAUTH_RESPONSE" | tail -n1)
-BODY=$(echo "$UNAUTH_RESPONSE" | head -n -1)
+BODY=$(echo "$UNAUTH_RESPONSE" | sed '$d')
 
 echo "Response: $BODY"
 echo "HTTP Code: $HTTP_CODE"
