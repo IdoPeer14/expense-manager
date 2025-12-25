@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard - Upload Invoices</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=Noto+Sans:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-[#0d141b] dark:text-white transition-colors duration-200">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#e7edf3] dark:border-gray-800 bg-white dark:bg-[#15202b] px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<div class="size-8 rounded bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">FinTrack Manager</h2>
+</div>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#e7edf3] dark:bg-gray-700 text-[#0d141b] dark:text-white text-sm font-bold leading-normal hover:bg-[#dbe4ec] dark:hover:bg-gray-600 transition-colors">
+<span class="truncate">Logout</span>
+</button>
+</header>
+<div class="layout-container flex h-full grow flex-col">
+<div class="px-6 md:px-12 lg:px-40 flex flex-1 justify-center py-8">
+<div class="layout-content-container flex flex-col max-w-[1024px] flex-1 w-full gap-6">
+<!-- Page Heading & Tabs -->
+<div class="flex flex-col gap-6">
+<!-- Title Section -->
+<div class="flex flex-col gap-2">
+<h1 class="text-3xl font-black leading-tight tracking-[-0.033em]">Upload Invoices</h1>
+<p class="text-[#4c739a] dark:text-gray-400 text-base font-normal leading-normal">Upload your invoice files to automatically parse and extract financial details.</p>
+</div>
+<!-- Navigation Tabs -->
+<div class="border-b border-[#cfdbe7] dark:border-gray-700">
+<div class="flex gap-8">
+<a class="flex items-center gap-2 border-b-[3px] border-primary text-[#0d141b] dark:text-white pb-[13px] pt-2 px-1" href="#">
+<span class="material-symbols-outlined text-[20px] text-primary">cloud_upload</span>
+<p class="text-sm font-bold leading-normal tracking-[0.015em]">Upload Invoices</p>
+</a>
+<a class="flex items-center gap-2 border-b-[3px] border-transparent text-[#4c739a] dark:text-gray-400 pb-[13px] pt-2 px-1 hover:text-[#0d141b] dark:hover:text-gray-200 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">receipt_long</span>
+<p class="text-sm font-bold leading-normal tracking-[0.015em]">Expenses Management</p>
+</a>
+</div>
+</div>
+</div>
+<!-- Main Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- Left Column: Upload Area -->
+<div class="lg:col-span-5 flex flex-col gap-4">
+<div class="bg-white dark:bg-[#15202b] rounded-xl p-6 shadow-sm border border-[#e7edf3] dark:border-gray-800">
+<h3 class="text-lg font-bold mb-4">New Document</h3>
+<!-- Dropzone -->
+<div class="group flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-[#cfdbe7] dark:border-gray-700 bg-background-light dark:bg-gray-800/50 hover:bg-[#eaf2fa] dark:hover:bg-gray-800 transition-colors px-6 py-12 cursor-pointer">
+<div class="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">upload_file</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-center">
+<p class="text-[#0d141b] dark:text-white text-base font-bold">Click to upload or drag &amp; drop</p>
+<p class="text-[#4c739a] dark:text-gray-400 text-xs">PDF, JPG, PNG up to 10MB</p>
+</div>
+</div>
+<!-- Action Button -->
+<div class="mt-6">
+<button class="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg h-12 bg-primary hover:bg-blue-600 text-white text-base font-bold shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+<span class="material-symbols-outlined text-[20px]">rocket_launch</span>
+<span>Process Invoice</span>
+</button>
+</div>
+</div>
+<!-- Upload Status (Example of a recent upload) -->
+<div class="bg-white dark:bg-[#15202b] rounded-xl p-5 shadow-sm border border-[#e7edf3] dark:border-gray-800 flex items-center justify-between gap-3">
+<div class="flex items-center gap-3 overflow-hidden">
+<div class="size-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400 shrink-0">
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<div class="flex flex-col truncate">
+<span class="text-sm font-bold text-[#0d141b] dark:text-white truncate">invoice_march_2024.pdf</span>
+<span class="text-xs text-green-600 dark:text-green-400 font-medium">Analysis Complete</span>
+</div>
+</div>
+<button class="p-2 text-gray-400 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+<!-- Right Column: Parsed Data Preview -->
+<div class="lg:col-span-7 flex flex-col gap-4">
+<div class="bg-white dark:bg-[#15202b] rounded-xl p-6 lg:p-8 shadow-sm border border-[#e7edf3] dark:border-gray-800 h-full">
+<div class="flex items-center justify-between mb-6 pb-4 border-b border-[#e7edf3] dark:border-gray-800">
+<h3 class="text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">data_info_alert</span>
+                                        Extracted Data
+                                    </h3>
+<span class="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider">Preview</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+<!-- Field Group: Business -->
+<div class="md:col-span-2">
+<label class="block text-xs font-semibold text-[#4c739a] dark:text-gray-400 uppercase tracking-wider mb-1">Business Name</label>
+<div class="flex items-center gap-2 p-3 rounded bg-background-light dark:bg-gray-800 border border-transparent focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20 transition-all">
+<span class="material-symbols-outlined text-gray-400 text-[20px]">store</span>
+<input class="bg-transparent w-full text-sm font-medium text-[#0d141b] dark:text-white outline-none border-none p-0 focus:ring-0" placeholder="-" type="text" value="Acme Cloud Services Ltd."/>
+</div>
+</div>
+<!-- Field Group: Invoice ID & Date -->
+<div>
+<label class="block text-xs font-semibold text-[#4c739a] dark:text-gray-400 uppercase tracking-wider mb-1">Invoice Number</label>
+<div class="flex items-center gap-2 p-3 rounded bg-background-light dark:bg-gray-800 border border-transparent focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20 transition-all">
+<span class="material-symbols-outlined text-gray-400 text-[20px]">tag</span>
+<input class="bg-transparent w-full text-sm font-medium text-[#0d141b] dark:text-white outline-none border-none p-0 focus:ring-0" placeholder="-" type="text" value="INV-2024-001"/>
+</div>
+</div>
+<div>
+<label class="block text-xs font-semibold text-[#4c739a] dark:text-gray-400 uppercase tracking-wider mb-1">Transaction Date</label>
+<div class="flex items-center gap-2 p-3 rounded bg-background-light dark:bg-gray-800 border border-transparent focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20 transition-all">
+<span class="material-symbols-outlined text-gray-400 text-[20px]">calendar_today</span>
+<input class="bg-transparent w-full text-sm font-medium text-[#0d141b] dark:text-white outline-none border-none p-0 focus:ring-0" type="date" value="2024-03-15"/>
+</div>
+</div>
+<!-- Field Group: Type & Tax ID -->
+<div>
+<label class="block text-xs font-semibold text-[#4c739a] dark:text-gray-400 uppercase tracking-wider mb-1">Document Type</label>
+<div class="relative">
+<select class="w-full p-3 rounded bg-background-light dark:bg-gray-800 border border-transparent focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all text-sm font-medium text-[#0d141b] dark:text-white appearance-none outline-none">
+<option>Tax Invoice</option>
+<option>Receipt</option>
+<option>Credit Note</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-[20px]">arrow_drop_down</span>
+</div>
+</div>
+<div>
+<label class="block text-xs font-semibold text-[#4c739a] dark:text-gray-400 uppercase tracking-wider mb-1">Tax ID / VAT</label>
+<div class="flex items-center gap-2 p-3 rounded bg-background-light dark:bg-gray-800 border border-transparent focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20 transition-all">
+<span class="material-symbols-outlined text-gray-400 text-[20px]">badge</span>
+<input class="bg-transparent w-full text-sm font-medium text-[#0d141b] dark:text-white outline-none border-none p-0 focus:ring-0" placeholder="-" type="text" value="GB123456789"/>
+</div>
+</div>
+<!-- Field Group: Description -->
+<div class="md:col-span-2">
+<label class="block text-xs font-semibold text-[#4c739a] dark:text-gray-400 uppercase tracking-wider mb-1">Service Description</label>
+<textarea class="w-full p-3 rounded bg-background-light dark:bg-gray-800 border border-transparent focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all text-sm font-medium text-[#0d141b] dark:text-white resize-none outline-none" placeholder="Enter details..." rows="2">Monthly Server Hosting - Enterprise Plan</textarea>
+</div>
+<!-- Financials Section -->
+<div class="md:col-span-2 mt-2 pt-6 border-t border-dashed border-[#e7edf3] dark:border-gray-700">
+<div class="grid grid-cols-2 gap-6">
+<div>
+<label class="block text-xs font-semibold text-[#4c739a] dark:text-gray-400 uppercase tracking-wider mb-1">Amount (Pre-VAT)</label>
+<div class="flex items-center gap-2 p-3 rounded bg-background-light dark:bg-gray-800 border border-transparent focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20 transition-all">
+<span class="text-gray-400 font-bold">$</span>
+<input class="bg-transparent w-full text-sm font-medium text-[#0d141b] dark:text-white outline-none border-none p-0 focus:ring-0" type="number" value="450.00"/>
+</div>
+</div>
+<div>
+<label class="block text-xs font-bold text-primary uppercase tracking-wider mb-1">Amount (Post-VAT)</label>
+<div class="flex items-center gap-2 p-3 rounded bg-primary/10 border border-primary/20 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/30 transition-all">
+<span class="text-primary font-bold">$</span>
+<input class="bg-transparent w-full text-lg font-bold text-primary outline-none border-none p-0 focus:ring-0" type="number" value="540.00"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="mt-8 flex justify-end gap-3 pt-4 border-t border-[#e7edf3] dark:border-gray-800">
+<button class="px-5 py-2.5 rounded-lg border border-[#cfdbe7] dark:border-gray-600 text-sm font-bold text-[#4c739a] dark:text-gray-300 hover:bg-background-light dark:hover:bg-gray-800 transition-colors">Discard</button>
+<button class="px-6 py-2.5 rounded-lg bg-primary text-white text-sm font-bold hover:bg-blue-600 shadow-md transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">check</span>
+                                        Confirm &amp; Save
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

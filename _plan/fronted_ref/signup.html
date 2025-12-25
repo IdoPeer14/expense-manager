@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Register Account - Expense &amp; Invoice Manager</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "primary-hover": "#0e62b8",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1b2531",
+                        "border-light": "#e5e7eb",
+                        "border-dark": "#374151",
+                        "text-main-light": "#0d141b",
+                        "text-main-dark": "#ffffff",
+                        "text-sub-light": "#4c739a",
+                        "text-sub-dark": "#9ca3af",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Loading Spinner Animation */
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #ffffff;
+            width: 20px;
+            height: 20px;
+            -webkit-animation: spin 1s linear infinite; /* Safari */
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col justify-center items-center text-text-main-light dark:text-text-main-dark transition-colors duration-200">
+<div class="w-full max-w-md px-4 py-8 sm:px-0">
+<!-- Logo Section -->
+<div class="flex justify-center mb-8">
+<div class="flex items-center gap-3">
+<div class="size-10 bg-primary/10 dark:bg-primary/20 rounded-lg flex items-center justify-center text-primary">
+<svg class="size-6" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_6_319)">
+<path d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z" fill="currentColor"></path>
+</g>
+<defs>
+<clippath id="clip0_6_319"><rect fill="white" height="48" width="48"></rect></clippath>
+</defs>
+</svg>
+</div>
+<h1 class="text-xl font-bold tracking-tight">Expense Manager</h1>
+</div>
+</div>
+<!-- Main Card -->
+<div class="bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl shadow-sm overflow-hidden">
+<div class="p-8">
+<!-- Header -->
+<div class="mb-8 text-center">
+<h2 class="text-2xl font-bold mb-2">Create your account</h2>
+<p class="text-text-sub-light dark:text-text-sub-dark text-sm">Start managing your expenses and invoices efficiently today.</p>
+</div>
+<!-- Registration Error Alert (Simulated State) -->
+<div class="mb-6 hidden">
+<div class="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900/50 dark:bg-red-900/20">
+<span class="material-symbols-outlined text-red-600 dark:text-red-400 text-xl">error</span>
+<div class="flex flex-col gap-1">
+<p class="text-red-800 dark:text-red-300 text-sm font-semibold">Registration Failed</p>
+<p class="text-red-600 dark:text-red-400 text-sm">This email is already associated with an account.</p>
+</div>
+</div>
+</div>
+<!-- Form -->
+<form class="flex flex-col gap-5" onsubmit="event.preventDefault();">
+<!-- Email Field -->
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-medium text-text-main-light dark:text-text-main-dark" for="email">Email address</label>
+<div class="relative">
+<input class="form-input block w-full rounded-lg border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-text-main-light dark:text-text-main-dark focus:border-primary focus:ring-primary dark:focus:border-primary sm:text-sm h-11 px-3" id="email" name="email" placeholder="name@company.com" required="" type="email"/>
+<!-- Validation Icon (Hidden by default, shown on valid) -->
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 hidden">
+<span class="material-symbols-outlined text-green-500 text-lg">check_circle</span>
+</div>
+</div>
+<!-- Inline Error (Hidden by default) -->
+<p class="text-red-500 text-xs mt-0.5 hidden" id="email-error">Please enter a valid email address.</p>
+</div>
+<!-- Password Field -->
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-medium text-text-main-light dark:text-text-main-dark" for="password">Password</label>
+<div class="relative">
+<input class="form-input block w-full rounded-lg border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-text-main-light dark:text-text-main-dark focus:border-primary focus:ring-primary dark:focus:border-primary sm:text-sm h-11 px-3 pr-10" id="password" minlength="8" name="password" placeholder="••••••••" required="" type="password"/>
+<button class="absolute inset-y-0 right-0 flex items-center pr-3 text-text-sub-light dark:text-text-sub-dark hover:text-text-main-light dark:hover:text-text-main-dark transition-colors" type="button">
+<span class="material-symbols-outlined text-xl">visibility</span>
+</button>
+</div>
+<p class="text-text-sub-light dark:text-text-sub-dark text-xs mt-0.5">Must be at least 8 characters long.</p>
+</div>
+<!-- Confirm Password Field -->
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-medium text-text-main-light dark:text-text-main-dark" for="confirm_password">Confirm Password</label>
+<input class="form-input block w-full rounded-lg border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-text-main-light dark:text-text-main-dark focus:border-primary focus:ring-primary dark:focus:border-primary sm:text-sm h-11 px-3" id="confirm_password" name="confirm_password" placeholder="••••••••" required="" type="password"/>
+</div>
+<!-- Terms Checkbox -->
+<div class="flex items-start gap-3 mt-2">
+<div class="flex h-5 items-center">
+<input class="h-4 w-4 rounded border-border-light text-primary focus:ring-primary dark:border-border-dark dark:bg-background-dark" id="terms" name="terms" type="checkbox"/>
+</div>
+<label class="text-sm text-text-sub-light dark:text-text-sub-dark" for="terms">
+                            I agree to the <a class="font-medium text-primary hover:text-primary-hover hover:underline" href="#">Terms of Service</a> and <a class="font-medium text-primary hover:text-primary-hover hover:underline" href="#">Privacy Policy</a>.
+                        </label>
+</div>
+<!-- Submit Button -->
+<button class="group relative flex w-full justify-center rounded-lg bg-primary py-3 px-4 text-sm font-semibold text-white hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all duration-200 shadow-sm mt-2" type="submit">
+<span class="absolute inset-y-0 left-0 flex items-center pl-3">
+<!-- Optional icon -->
+</span>
+                        Create account
+                    </button>
+<!-- Loading Button State (Hidden by default, swap classes with above button to test) -->
+<button class="hidden w-full justify-center items-center gap-2 rounded-lg bg-primary/70 py-3 px-4 text-sm font-semibold text-white cursor-not-allowed mt-2" disabled="" type="button">
+<div class="spinner"></div>
+                        Creating account...
+                    </button>
+</form>
+<!-- Social Login Separator (Optional but adds modernity) -->
+<div class="mt-6">
+<div class="relative">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-border-light dark:border-border-dark"></div>
+</div>
+<div class="relative flex justify-center text-sm">
+<span class="bg-surface-light dark:bg-surface-dark px-2 text-text-sub-light dark:text-text-sub-dark">Or continue with</span>
+</div>
+</div>
+<div class="mt-6 grid grid-cols-2 gap-3">
+<a class="flex w-full items-center justify-center gap-3 rounded-lg border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark px-3 py-2 text-sm font-medium text-text-main-light dark:text-text-main-dark shadow-sm hover:bg-background-light dark:hover:bg-background-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 transition-colors" href="#">
+<img alt="Google logo" class="h-5 w-5" data-alt="Google G logo in color" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzOS6tdDYEL5ERuPzECTojdVR6w8cQfjdcIyTUkCQq2gO-Q9pb4k8hsO0FWs_qvoceNZcJkbskkVMF4gk8CVE6TpgXo4sDHYkwACr1-LjTp1O1j4vurgI4kRLCRHkfLzmwV62cOyFV_rOLQOBgfiqBA4joyC9DviLqunPCsj1EwAr44hNf8qmkRqpLWFCt2__uijhBX2DjcYG8vnxzZGNq0Ud-FQ9RpTcTM8IjYANv_zDfiweOnyRCse6zHMVLhXaXSD-jgXpK0zc"/>
+<span class="sr-only">Sign up with Google</span>
+                            Google
+                        </a>
+<a class="flex w-full items-center justify-center gap-3 rounded-lg border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark px-3 py-2 text-sm font-medium text-text-main-light dark:text-text-main-dark shadow-sm hover:bg-background-light dark:hover:bg-background-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 transition-colors" href="#">
+<svg aria-hidden="true" class="h-5 w-5 text-[#1877F2] dark:text-white" fill="currentColor" viewbox="0 0 24 24">
+<path clip-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" fill-rule="evenodd"></path>
+</svg>
+<span class="sr-only">Sign up with Facebook</span>
+                            Facebook
+                        </a>
+</div>
+</div>
+</div>
+<!-- Footer Login Link -->
+<div class="border-t border-border-light dark:border-border-dark bg-gray-50 dark:bg-gray-900/50 px-8 py-4 text-center">
+<p class="text-sm text-text-sub-light dark:text-text-sub-dark">
+                    Already have an account? 
+                    <a class="font-semibold text-primary hover:text-primary-hover hover:underline" href="#">Log in</a>
+</p>
+</div>
+</div>
+<!-- Additional Links -->
+<div class="mt-8 flex justify-center gap-6 text-sm text-text-sub-light dark:text-text-sub-dark">
+<a class="hover:text-text-main-light dark:hover:text-text-main-dark transition-colors" href="#">Privacy</a>
+<a class="hover:text-text-main-light dark:hover:text-text-main-dark transition-colors" href="#">Terms</a>
+<a class="hover:text-text-main-light dark:hover:text-text-main-dark transition-colors" href="#">Help</a>
+</div>
+</div>
+</body></html>

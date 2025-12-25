@@ -1,0 +1,21 @@
+Total Amount
+$1,170
+
+Receipt / Tax Invoice
+
+VAT (17%)
+$170
+
+Amount (Before VAT)
+$1,000
+
+Business Name: Example Tech LTD
+Company ID: 512345678
+Date: 01/01/2025
+
+Description
+
+Software Development Service
+
+Total Due: $1,170
+

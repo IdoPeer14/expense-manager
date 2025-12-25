@@ -23,7 +23,8 @@ public class DocumentsController : BaseAuthController
     }
 
     [HttpPost]
-    public async Task<IActionResult> UploadDocument(IFormFile file)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UploadDocument([FromForm] IFormFile file)
     {
         if (file == null || file.Length == 0)
         {

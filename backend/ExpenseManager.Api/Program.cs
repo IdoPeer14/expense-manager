@@ -19,6 +19,12 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
 
+// Configure file upload size limit (50MB)
+builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 50 * 1024 * 1024; // 50MB
+});
+
 // Swagger (Development only)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

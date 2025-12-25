@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard - Expenses Management</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#137fec",
+              "background-light": "#f6f7f8",
+              "background-dark": "#101922",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom scrollbar for table container if needed */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c1c1c1; 
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8; 
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display flex flex-col min-h-screen antialiased selection:bg-primary/20 selection:text-primary">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-30 flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-3 shadow-sm">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center size-10 rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-2xl">account_balance_wallet</span>
+</div>
+<h1 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight">Expense &amp; Invoice Manager</h1>
+</div>
+<button class="group flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-9 px-4 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-sm font-medium transition-colors">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+<span class="truncate">Logout</span>
+</button>
+</header>
+<!-- Main Content Container -->
+<main class="flex-1 w-full max-w-[1440px] mx-auto p-6 md:p-8 flex flex-col gap-6">
+<!-- Tabs -->
+<div class="border-b border-slate-200 dark:border-slate-700">
+<nav aria-label="Tabs" class="flex gap-8">
+<a class="group flex items-center gap-2 border-b-[3px] border-transparent pb-3 px-1 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200" href="#">
+<span class="material-symbols-outlined text-[20px]">cloud_upload</span>
+<span class="text-sm font-bold">Upload Invoices</span>
+</a>
+<a class="group flex items-center gap-2 border-b-[3px] border-primary pb-3 px-1 text-primary" href="#">
+<span class="material-symbols-outlined text-[20px] fill-1">receipt_long</span>
+<span class="text-sm font-bold">Expenses Management</span>
+</a>
+</nav>
+</div>
+<!-- Filters Panel -->
+<section class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2 text-slate-800 dark:text-slate-200">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+<h2 class="text-base font-bold">Filter Expenses</h2>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 items-end">
+<!-- Date Range -->
+<div class="lg:col-span-2 space-y-1.5">
+<label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Date Range</label>
+<div class="relative">
+<select class="w-full appearance-none rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
+<option>Last 30 Days</option>
+<option>This Month</option>
+<option>Last Quarter</option>
+<option>Custom Range...</option>
+</select>
+<span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-500">
+<span class="material-symbols-outlined text-[20px]">expand_more</span>
+</span>
+</div>
+</div>
+<!-- Min Amount -->
+<div class="lg:col-span-2 space-y-1.5">
+<label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Min Amount</label>
+<div class="relative">
+<span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
+<input class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pl-7 pr-3 py-2.5 text-sm text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" placeholder="0.00" type="number"/>
+</div>
+</div>
+<!-- Max Amount -->
+<div class="lg:col-span-2 space-y-1.5">
+<label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Max Amount</label>
+<div class="relative">
+<span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
+<input class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pl-7 pr-3 py-2.5 text-sm text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" placeholder="10,000" type="number"/>
+</div>
+</div>
+<!-- Category -->
+<div class="lg:col-span-2 space-y-1.5">
+<label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Category</label>
+<div class="relative">
+<select class="w-full appearance-none rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
+<option value="">All Categories</option>
+<option>Vehicle</option>
+<option>Food</option>
+<option>Operations</option>
+<option>IT</option>
+<option>Training</option>
+<option>Other</option>
+</select>
+<span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-500">
+<span class="material-symbols-outlined text-[20px]">expand_more</span>
+</span>
+</div>
+</div>
+<!-- Business Name -->
+<div class="lg:col-span-2 space-y-1.5">
+<label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Business Name</label>
+<div class="relative">
+<input class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Search..." type="text"/>
+<span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</span>
+</div>
+</div>
+<!-- Buttons -->
+<div class="lg:col-span-2 flex gap-2">
+<button class="flex-1 bg-primary hover:bg-blue-600 text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition-colors shadow-sm active:scale-[0.98]">
+                        Apply
+                    </button>
+<button class="flex-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold py-2.5 px-4 rounded-lg text-sm transition-colors active:scale-[0.98]">
+                        Clear
+                    </button>
+</div>
+</div>
+</section>
+<!-- Expenses Table -->
+<section class="flex-1 flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+<!-- Table Header Actions (Optional Context) -->
+<div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+<p class="text-sm text-slate-500 dark:text-slate-400">Showing <span class="font-bold text-slate-900 dark:text-white">128</span> transactions</p>
+<button class="text-primary text-sm font-semibold hover:underline flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">download</span> Export CSV
+                </button>
+</div>
+<!-- Table Container -->
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-slate-50 dark:bg-slate-950/50 border-b border-slate-200 dark:border-slate-800">
+<th class="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Business Name</th>
+<th class="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Date</th>
+<th class="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Amount (Ex. VAT)</th>
+<th class="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Amount (Inc. VAT)</th>
+<th class="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Invoice #</th>
+<th class="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-[240px]">Category</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<!-- Row 1: Normal -->
+<tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-xs shrink-0">
+                                        AWS
+                                    </div>
+<span class="truncate">Amazon Web Services</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">Oct 24, 2023</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300 text-right font-mono">$120.00</td>
+<td class="px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white text-right font-mono">$144.00</td>
+<td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">INV-2023-001</td>
+<td class="px-6 py-3">
+<div class="relative">
+<select class="w-full appearance-none rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 pr-8 text-sm font-medium text-slate-700 dark:text-slate-200 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary hover:border-slate-300 dark:hover:border-slate-600 cursor-pointer">
+<option selected="">IT Services</option>
+<option>Vehicle</option>
+<option>Food</option>
+<option>Operations</option>
+<option>Training</option>
+<option>Other</option>
+</select>
+<span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400">
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</span>
+</div>
+</td>
+</tr>
+<!-- Row 2: Loading State -->
+<tr class="group bg-slate-50/50 dark:bg-slate-800/20">
+<td class="px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs shrink-0">
+                                        Uber
+                                    </div>
+<span class="truncate">Uber Rides</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">Oct 22, 2023</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300 text-right font-mono">$24.50</td>
+<td class="px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white text-right font-mono">$28.15</td>
+<td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">INV-2023-042</td>
+<td class="px-6 py-3">
+<div class="relative opacity-70 cursor-not-allowed">
+<select class="w-full appearance-none rounded-md border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 pr-8 text-sm font-medium text-slate-500 shadow-sm" disabled="">
+<option>Uncategorized</option>
+</select>
+<span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-primary animate-spin">
+<span class="material-symbols-outlined text-[18px]">progress_activity</span>
+</span>
+</div>
+<p class="text-[10px] text-slate-400 mt-1 pl-1">Updating category...</p>
+</td>
+</tr>
+<!-- Row 3: Error State -->
+<tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-green-100 flex items-center justify-center text-green-600 font-bold text-xs shrink-0">
+                                        SB
+                                    </div>
+<span class="truncate">Starbucks</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">Oct 21, 2023</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300 text-right font-mono">$15.20</td>
+<td class="px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white text-right font-mono">$18.24</td>
+<td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">INV-2023-089</td>
+<td class="px-6 py-3">
+<div class="relative">
+<select class="w-full appearance-none rounded-md border border-red-300 bg-red-50 dark:bg-red-900/10 px-3 py-1.5 pr-8 text-sm font-medium text-red-700 dark:text-red-400 shadow-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 cursor-pointer">
+<option selected="">Food &amp; Drink</option>
+<option>Vehicle</option>
+<option>Operations</option>
+</select>
+<span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-red-500">
+<span class="material-symbols-outlined text-[18px]">error</span>
+</span>
+</div>
+<p class="text-[10px] text-red-500 mt-1 pl-1 font-medium">Failed to save. Try again.</p>
+</td>
+</tr>
+<!-- Row 4: Normal -->
+<tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs shrink-0">
+                                        ZM
+                                    </div>
+<span class="truncate">Zoom Video Comms</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">Oct 20, 2023</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300 text-right font-mono">$140.00</td>
+<td class="px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white text-right font-mono">$168.00</td>
+<td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">INV-2023-112</td>
+<td class="px-6 py-3">
+<div class="relative">
+<select class="w-full appearance-none rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 pr-8 text-sm font-medium text-slate-700 dark:text-slate-200 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary hover:border-slate-300 dark:hover:border-slate-600 cursor-pointer">
+<option selected="">IT Services</option>
+<option>Vehicle</option>
+<option>Food</option>
+<option>Operations</option>
+<option>Training</option>
+<option>Other</option>
+</select>
+<span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400">
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</span>
+</div>
+</td>
+</tr>
+<!-- Row 5: Normal -->
+<tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-gray-100 flex items-center justify-center text-gray-600 font-bold text-xs shrink-0">
+                                        AP
+                                    </div>
+<span class="truncate">Apple Store</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">Oct 19, 2023</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300 text-right font-mono">$2,499.00</td>
+<td class="px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white text-right font-mono">$2,998.80</td>
+<td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">INV-2023-156</td>
+<td class="px-6 py-3">
+<div class="relative">
+<select class="w-full appearance-none rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 pr-8 text-sm font-medium text-slate-700 dark:text-slate-200 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary hover:border-slate-300 dark:hover:border-slate-600 cursor-pointer">
+<option selected="">Equipment</option>
+<option>Vehicle</option>
+<option>Food</option>
+<option>Operations</option>
+<option>Training</option>
+<option>Other</option>
+</select>
+<span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400">
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</span>
+</div>
+</td>
+</tr>
+<!-- Row 6: Normal -->
+<tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-teal-100 flex items-center justify-center text-teal-600 font-bold text-xs shrink-0">
+                                        UD
+                                    </div>
+<span class="truncate">Udemy Courses</span>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">Oct 18, 2023</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300 text-right font-mono">$19.99</td>
+<td class="px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white text-right font-mono">$19.99</td>
+<td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">INV-2023-201</td>
+<td class="px-6 py-3">
+<div class="relative">
+<select class="w-full appearance-none rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 pr-8 text-sm font-medium text-slate-700 dark:text-slate-200 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary hover:border-slate-300 dark:hover:border-slate-600 cursor-pointer">
+<option selected="">Training/Education</option>
+<option>Vehicle</option>
+<option>Food</option>
+<option>Operations</option>
+<option>IT</option>
+<option>Other</option>
+</select>
+<span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400">
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-6 py-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+<span class="text-sm text-slate-500 ml-2">Page 1 of 12</span>
+</div>
+</div>
+</section>
+</main>
+</body></html>
