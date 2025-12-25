@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using ExpenseManager.Api.Data;
 using ExpenseManager.Api.Models;
@@ -35,11 +36,25 @@ public class OcrService
 
         try
         {
-            // Run Tesseract OCR
-            var ocrText = await RunTesseractOcr(document.StoragePath);
+            // Convert PDF to image if needed
+            string fileToProcess = document.StoragePath;
+            string? tempImagePath = null;
 
-            // Parse invoice fields
-            var parsedData = _invoiceParser.ParseInvoiceFields(ocrText);
+            if (IsPdfFile(document.StoragePath))
+            {
+                _logger.LogInformation("Converting PDF to image for OCR: {FilePath}", document.StoragePath);
+                tempImagePath = await ConvertPdfToImageAsync(document.StoragePath);
+                fileToProcess = tempImagePath;
+                _logger.LogInformation("PDF converted to image: {ImagePath}", tempImagePath);
+            }
+
+            try
+            {
+                // Run Tesseract OCR
+                var ocrText = await RunTesseractOcr(fileToProcess);
+
+                // Parse invoice fields
+                var parsedData = _invoiceParser.ParseInvoiceFields(ocrText);
 
             // Update document with OCR results
             document.OcrText = ocrText;
@@ -47,9 +62,26 @@ public class OcrService
             document.ParseStatus = DocumentParseStatus.SUCCESS;
             document.ParseError = null;
 
-            await _db.SaveChangesAsync();
+                await _db.SaveChangesAsync();
 
-            return parsedData;
+                return parsedData;
+            }
+            finally
+            {
+                // Clean up temporary image file
+                if (tempImagePath != null && File.Exists(tempImagePath))
+                {
+                    try
+                    {
+                        File.Delete(tempImagePath);
+                        _logger.LogDebug("Deleted temporary image: {TempPath}", tempImagePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Failed to delete temporary image: {TempPath}", tempImagePath);
+                    }
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -129,6 +161,73 @@ public class OcrService
             {
                 _logger.LogError(ex, "Tesseract OCR failed for file: {FilePath}", filePath);
                 throw new InvalidOperationException($"OCR processing failed: {ex.Message}", ex);
+            }
+        });
+    }
+
+    private bool IsPdfFile(string filePath)
+    {
+        var extension = Path.GetExtension(filePath).ToLowerInvariant();
+        return extension == ".pdf";
+    }
+
+    private async Task<string> ConvertPdfToImageAsync(string pdfPath)
+    {
+        return await Task.Run(() =>
+        {
+            try
+            {
+                // Create temporary directory for conversion
+                var tempDir = Path.Combine(Path.GetTempPath(), "expense-manager-ocr");
+                Directory.CreateDirectory(tempDir);
+
+                // Generate unique filename for output
+                var outputBaseName = Path.Combine(tempDir, $"pdf_convert_{Guid.NewGuid()}");
+                var outputImagePath = $"{outputBaseName}.png";
+
+                // Use pdftoppm to convert PDF to PNG (first page only)
+                // pdftoppm is available via poppler-utils package
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = "pdftoppm",
+                    Arguments = $"\"{pdfPath}\" \"{outputBaseName}\" -png -f 1 -singlefile",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                _logger.LogInformation("Running pdftoppm: {Command} {Arguments}", startInfo.FileName, startInfo.Arguments);
+
+                using var process = Process.Start(startInfo);
+                if (process == null)
+                {
+                    throw new InvalidOperationException("Failed to start pdftoppm process");
+                }
+
+                var output = process.StandardOutput.ReadToEnd();
+                var error = process.StandardError.ReadToEnd();
+                process.WaitForExit();
+
+                if (process.ExitCode != 0)
+                {
+                    throw new InvalidOperationException(
+                        $"pdftoppm failed with exit code {process.ExitCode}. Error: {error}");
+                }
+
+                if (!File.Exists(outputImagePath))
+                {
+                    throw new FileNotFoundException(
+                        $"Converted image not found at {outputImagePath}. pdftoppm output: {output}");
+                }
+
+                _logger.LogInformation("Successfully converted PDF to image: {ImagePath}", outputImagePath);
+                return outputImagePath;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "PDF to image conversion failed for: {PdfPath}", pdfPath);
+                throw new InvalidOperationException($"Failed to convert PDF to image: {ex.Message}", ex);
             }
         });
     }
