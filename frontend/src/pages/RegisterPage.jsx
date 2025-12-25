@@ -39,7 +39,7 @@ const RegisterPage = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 bg-background-light dark:bg-background-dark relative">
       {/* Language Switcher - Top Right */}
-      <div className="absolute top-6 right-6 z-20">
+      <div className="absolute top-6 ltr:right-6 rtl:left-6 z-20">
         <LanguageSwitcher />
       </div>
 

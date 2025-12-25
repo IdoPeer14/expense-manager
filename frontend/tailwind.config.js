@@ -23,6 +23,7 @@ export default {
       },
       fontFamily: {
         display: ['Inter', 'sans-serif'],
+        hebrew: ['Rubik', 'sans-serif'],
       },
       borderRadius: {
         DEFAULT: '0.25rem',

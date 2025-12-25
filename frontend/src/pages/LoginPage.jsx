@@ -45,7 +45,7 @@ const LoginPage = () => {
       </div>
 
       {/* Language Switcher - Top Right */}
-      <div className="absolute top-6 right-6 z-20">
+      <div className="absolute top-6 ltr:right-6 rtl:left-6 z-20">
         <LanguageSwitcher />
       </div>
 
