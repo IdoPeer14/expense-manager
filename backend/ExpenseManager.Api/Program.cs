@@ -46,12 +46,14 @@ if (rawConnectionString.StartsWith("postgres://") || rawConnectionString.StartsW
     try
     {
         var uri = new Uri(rawConnectionString);
+        var userInfo = uri.UserInfo.Split(':');
+
         var builder2 = new NpgsqlConnectionStringBuilder
         {
             Host = uri.Host,
-            Port = uri.Port,
-            Username = uri.UserInfo.Split(':')[0],
-            Password = uri.UserInfo.Split(':')[1],
+            Port = uri.Port > 0 ? uri.Port : 5432, // Default to 5432 if no port specified
+            Username = userInfo.Length > 0 ? userInfo[0] : "",
+            Password = userInfo.Length > 1 ? userInfo[1] : "",
             Database = uri.LocalPath.TrimStart('/'),
             SslMode = SslMode.Require,
             IncludeErrorDetail = true
