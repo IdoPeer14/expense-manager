@@ -37,7 +37,7 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(
                 "http://localhost:5173",     // Local development
                 "http://localhost:3000",     // Alternative local port
-                "https://your-frontend-domain.com"  // Production frontend (update this!)
+                "https://expense-manager-uad5.onrender.com/"  // Production frontend (update this!)
             )
             .AllowAnyMethod()
             .AllowAnyHeader()
