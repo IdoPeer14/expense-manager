@@ -30,3 +30,36 @@ dist/
 # --------------------
 .DS_Store
 
+# --------------------
+# Uploads / Storage
+# --------------------
+uploads/
+wwwroot/uploads/
+*.pdf
+*.jpg
+*.jpeg
+*.png
+!docs/samples/*.pdf
+!docs/samples/*.jpg
+!docs/samples/*.jpeg
+!docs/samples/*.png
+
+# --------------------
+# Test Data / Results
+# --------------------
+*.json
+*.png
+*.txt
+*.pdf
+tmp/
+*.log
+
+# --------------------
+# IDE
+# --------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+

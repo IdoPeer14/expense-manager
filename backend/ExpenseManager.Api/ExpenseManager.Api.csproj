@@ -7,11 +7,6 @@
     <RollForward>Major</RollForward>
   </PropertyGroup>
 
-  <!-- Include wwwroot static files in publish -->
-  <ItemGroup>
-    <Content Include="wwwroot\**" CopyToPublishDirectory="PreserveNewest" />
-  </ItemGroup>
-
   <ItemGroup>
     <!-- OpenAPI -->
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.4" />
