@@ -1,0 +1,32 @@
+# --------------------
+# ASP.NET Core
+# --------------------
+bin/
+obj/
+*.user
+*.suo
+*.db
+.vs/
+
+# --------------------
+# Environment / Secrets
+# --------------------
+appsettings.Development.json
+.env
+
+# --------------------
+# Docker
+# --------------------
+**/Dockerfile.env
+
+# --------------------
+# Node / Frontend
+# --------------------
+node_modules/
+dist/
+
+# --------------------
+# OS
+# --------------------
+.DS_Store
+
