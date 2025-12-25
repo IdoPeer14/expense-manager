@@ -52,6 +52,9 @@ public class OcrService
                 // Run Tesseract OCR
                 var ocrText = await RunTesseractOcr(fileToProcess);
 
+                // Log the raw OCR text for debugging
+                _logger.LogInformation("Raw OCR Text:\n{OcrText}", ocrText);
+
                 // Parse invoice fields
                 var parsedData = _invoiceParser.ParseInvoiceFields(ocrText);
 
