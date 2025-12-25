@@ -23,6 +23,22 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// CORS - Allow frontend to make requests
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins(
+                "http://localhost:5173",     // Local development
+                "http://localhost:3000",     // Alternative local port
+                "https://your-frontend-domain.com"  // Production frontend (update this!)
+            )
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+});
+
 // Custom services
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<PasswordHasherService>();
@@ -170,6 +186,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// CORS - Must be before Authentication/Authorization
+app.UseCors("AllowFrontend");
 
 // Authentication & Authorization
 app.UseAuthentication();
