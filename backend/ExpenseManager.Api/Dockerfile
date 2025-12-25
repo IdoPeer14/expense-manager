@@ -29,7 +29,8 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Set TESSDATA_PREFIX environment variable for Tesseract
-ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata
+# Most common location for apt-installed Tesseract on Debian/Ubuntu
+ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/tessdata
 
 # Debug: Check where tessdata actually is
 RUN echo "=== Checking Tesseract installation ===" && \
