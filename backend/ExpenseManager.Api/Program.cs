@@ -31,22 +31,42 @@ builder.Services.AddScoped<OcrService>();
 // --------------------
 
 // Prefer DATABASE_URL (Render), fallback to appsettings (local)
-var rawConnectionString =
-    builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? Environment.GetEnvironmentVariable("DATABASE_URL");
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+var rawConnectionString = databaseUrl ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
 if (string.IsNullOrWhiteSpace(rawConnectionString))
 {
-    throw new InvalidOperationException("Database connection string not configured.");
+    throw new InvalidOperationException("Database connection string not configured. Set DATABASE_URL environment variable or configure DefaultConnection in appsettings.json");
 }
 
-// Convert postgres URL -> Npgsql connection string if needed
-var connectionString = rawConnectionString.StartsWith("postgres")
-    ? new NpgsqlConnectionStringBuilder(rawConnectionString)
+// Convert postgres:// URL -> Npgsql connection string if needed
+string connectionString;
+if (rawConnectionString.StartsWith("postgres://") || rawConnectionString.StartsWith("postgresql://"))
+{
+    try
     {
-        SslMode = SslMode.Require
-    }.ConnectionString
-    : rawConnectionString;
+        var uri = new Uri(rawConnectionString);
+        var builder2 = new NpgsqlConnectionStringBuilder
+        {
+            Host = uri.Host,
+            Port = uri.Port,
+            Username = uri.UserInfo.Split(':')[0],
+            Password = uri.UserInfo.Split(':')[1],
+            Database = uri.LocalPath.TrimStart('/'),
+            SslMode = SslMode.Require,
+            IncludeErrorDetail = true
+        };
+        connectionString = builder2.ConnectionString;
+    }
+    catch (Exception ex)
+    {
+        throw new InvalidOperationException($"Failed to parse DATABASE_URL: {ex.Message}. Raw value length: {rawConnectionString.Length}", ex);
+    }
+}
+else
+{
+    connectionString = rawConnectionString;
+}
 
 // EF Core + PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(options =>
