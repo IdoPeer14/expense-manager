@@ -82,31 +82,14 @@ const ExpenseFilters = ({ onApply, onClear, loading }) => {
   }));
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="space-y-3 sm:space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         <Select
           label={t('expenses.dateRange')}
           options={translatedDateRangeOptions}
           value={filters.dateRange}
           onChange={(e) => handleChange('dateRange', e.target.value)}
         />
-
-        {filters.dateRange === 'custom' && (
-          <>
-            <Input
-              label={t('dateRanges.startDate')}
-              type="date"
-              value={filters.startDate}
-              onChange={(e) => handleChange('startDate', e.target.value)}
-            />
-            <Input
-              label={t('dateRanges.endDate')}
-              type="date"
-              value={filters.endDate}
-              onChange={(e) => handleChange('endDate', e.target.value)}
-            />
-          </>
-        )}
 
         <Input
           label={t('expenses.minAmount')}
@@ -141,16 +124,40 @@ const ExpenseFilters = ({ onApply, onClear, loading }) => {
         />
       </div>
 
-      <div className="flex gap-3">
+      {/* Custom date range - separate row for better mobile experience */}
+      {filters.dateRange === 'custom' && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-1">
+          <Input
+            label={t('dateRanges.startDate')}
+            type="date"
+            value={filters.startDate}
+            onChange={(e) => handleChange('startDate', e.target.value)}
+          />
+          <Input
+            label={t('dateRanges.endDate')}
+            type="date"
+            value={filters.endDate}
+            onChange={(e) => handleChange('endDate', e.target.value)}
+          />
+        </div>
+      )}
+
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
         <Button
           type="button"
           variant="primary"
           onClick={handleApply}
           loading={loading}
+          className="w-full sm:w-auto"
         >
           {t('expenses.applyFilters')}
         </Button>
-        <Button type="button" variant="secondary" onClick={handleClear}>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={handleClear}
+          className="w-full sm:w-auto"
+        >
           {t('expenses.clearFilters')}
         </Button>
       </div>

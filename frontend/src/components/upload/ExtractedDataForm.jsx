@@ -62,8 +62,8 @@ const ExtractedDataForm = ({ data, onSave, onDiscard, loading }) => {
   }));
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
         <Input
           label={t('form.vendorName')}
           placeholder={t('expenses.businessName')}
@@ -121,13 +121,13 @@ const ExtractedDataForm = ({ data, onSave, onDiscard, loading }) => {
         </div>
       </div>
 
-      <div className="flex gap-3 pt-2">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-2">
         <Button
           type="button"
           variant="secondary"
           onClick={onDiscard}
           disabled={loading}
-          className="flex-1"
+          className="w-full sm:flex-1"
         >
           {t('form.discard')}
         </Button>
@@ -135,7 +135,7 @@ const ExtractedDataForm = ({ data, onSave, onDiscard, loading }) => {
           type="submit"
           variant="primary"
           loading={loading}
-          className="flex-1"
+          className="w-full sm:flex-1"
         >
           {t('form.confirmSave')}
         </Button>

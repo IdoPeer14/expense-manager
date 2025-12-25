@@ -1,0 +1,36 @@
+# Node
+**/node_modules
+**/npm-debug.log
+frontend/dist
+
+# .NET
+**/bin
+**/obj
+**/.vs
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+docs/
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Build scripts
+build-and-deploy.sh
+
+# Temp
+tmp/
+**/wwwroot/*
+
+# OS
+.DS_Store
+Thumbs.db

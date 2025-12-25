@@ -36,12 +36,12 @@ const ExpensesTab = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4 sm:gap-6">
       {/* Filters Panel */}
-      <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
-        <div className="flex items-center gap-2 text-slate-800 dark:text-slate-200 mb-4">
+      <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm">
+        <div className="flex items-center gap-2 text-slate-800 dark:text-slate-200 mb-3 sm:mb-4">
           <span className="material-symbols-outlined text-[20px]">filter_list</span>
-          <h2 className="text-base font-bold">{t('expenses.title')}</h2>
+          <h2 className="text-sm sm:text-base font-bold">{t('expenses.title')}</h2>
         </div>
         <ExpenseFilters
           onApply={handleApplyFilters}
@@ -52,8 +52,8 @@ const ExpensesTab = () => {
 
       {/* Expenses Table */}
       <section className="flex-1 flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
             Showing{' '}
             <span className="font-bold text-slate-900 dark:text-white">
               {pagination.totalCount}
