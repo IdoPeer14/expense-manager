@@ -86,11 +86,13 @@ public class OcrService
                 // Add standard locations
                 possiblePaths.AddRange(new[]
                 {
+                    "/opt/homebrew/share/tessdata",             // macOS Homebrew (Apple Silicon)
+                    "/usr/local/share/tessdata",                // macOS Homebrew (Intel)
                     "/usr/share/tesseract-ocr/tessdata",        // Standard Debian/Ubuntu location (apt install)
                     "/usr/share/tessdata",                      // Alternative Linux location
                     "/usr/share/tesseract-ocr/5.00/tessdata",   // Versioned Tesseract 5.x
                     "/usr/share/tesseract-ocr/4.00/tessdata",   // Versioned Tesseract 4.x
-                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tessdata")  // Local development
+                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tessdata")  // Custom location
                 });
 
                 string? tessdataPath = null;
