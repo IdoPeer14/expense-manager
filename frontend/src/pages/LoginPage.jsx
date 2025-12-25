@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import { loginSchema } from '../utils/validation';
 import Input from '../components/common/Input';
@@ -9,6 +10,7 @@ import Button from '../components/common/Button';
 import ErrorAlert from '../components/common/ErrorAlert';
 
 const LoginPage = () => {
+  const { t } = useTranslation();
   const [apiError, setApiError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -50,17 +52,17 @@ const LoginPage = () => {
               <span className="material-symbols-outlined text-[28px]">account_balance_wallet</span>
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-              Welcome Back
+              {t('auth.welcomeBack')}
             </h1>
             <p className="text-slate-500 dark:text-slate-400 text-sm">
-              Please enter your details to access your dashboard.
+              {t('auth.loginSubtitle')}
             </p>
           </div>
 
           {/* Error Message */}
           {apiError && (
             <ErrorAlert
-              title="Login Failed"
+              title={t('auth.loginFailed')}
               message={apiError}
               onClose={() => setApiError('')}
             />
@@ -69,7 +71,7 @@ const LoginPage = () => {
           {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
             <Input
-              label="Email Address"
+              label={t('auth.email')}
               type="email"
               placeholder="name@company.com"
               icon="mail"
@@ -78,7 +80,7 @@ const LoginPage = () => {
             />
 
             <Input
-              label="Password"
+              label={t('auth.password')}
               type="password"
               placeholder="••••••••"
               icon="lock"
@@ -94,7 +96,7 @@ const LoginPage = () => {
                 loading={isSubmitting}
                 className="w-full"
               >
-                Sign In
+                {t('auth.signIn')}
               </Button>
             </div>
           </form>
@@ -103,12 +105,12 @@ const LoginPage = () => {
         {/* Footer */}
         <div className="bg-slate-50 dark:bg-slate-800 px-8 py-4 border-t border-slate-100 dark:border-slate-700 text-center">
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            New to Expense Manager?{' '}
+            {t('auth.newAccount')}{' '}
             <Link
               to="/register"
               className="font-semibold text-primary hover:text-primary-hover transition-colors"
             >
-              Create an account
+              {t('auth.createAccount')}
             </Link>
           </p>
         </div>

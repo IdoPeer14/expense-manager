@@ -1,11 +1,14 @@
 import { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useUploadDocument, useAnalyzeDocument } from '../hooks/useDocuments';
 import { useCreateExpense } from '../hooks/useExpenses';
 import { MAX_FILE_SIZE, ACCEPTED_FILE_TYPES } from '../utils/constants';
 import ErrorAlert from '../components/common/ErrorAlert';
 import ExtractedDataForm from '../components/upload/ExtractedDataForm';
+import FilePreview from '../components/common/FilePreview';
 
 const UploadTab = () => {
+  const { t } = useTranslation();
   const [selectedFile, setSelectedFile] = useState(null);
   const [extractedData, setExtractedData] = useState(null);
   const [error, setError] = useState('');
@@ -150,13 +153,13 @@ const UploadTab = () => {
       {/* Left Column: Upload Area */}
       <div className="lg:col-span-5 flex flex-col gap-4">
         <div className="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
-          <h3 className="text-lg font-bold mb-4 text-slate-900 dark:text-white">New Document</h3>
+          <h3 className="text-lg font-bold mb-4 text-slate-900 dark:text-white">{t('upload.title')}</h3>
 
           {/* Error Alert */}
           {error && (
             <div className="mb-4">
               <ErrorAlert
-                title="Upload Error"
+                title={t('upload.uploadError')}
                 message={error}
                 onClose={() => setError('')}
               />
@@ -216,10 +219,10 @@ const UploadTab = () => {
               ) : (
                 <>
                   <p className="text-slate-900 dark:text-white text-base font-bold">
-                    Click to upload or drag & drop
+                    {t('upload.dragDrop')}
                   </p>
                   <p className="text-slate-500 dark:text-slate-400 text-xs">
-                    PDF, JPG, PNG up to 10MB
+                    {t('upload.fileTypes')}
                   </p>
                 </>
               )}
@@ -236,17 +239,25 @@ const UploadTab = () => {
               {isProcessing ? (
                 <>
                   <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
-                  <span>Processing...</span>
+                  <span>{t('upload.processing')}</span>
                 </>
               ) : (
                 <>
                   <span className="material-symbols-outlined text-[20px]">rocket_launch</span>
-                  <span>Process Invoice</span>
+                  <span>{t('upload.processButton')}</span>
                 </>
               )}
             </button>
           </div>
         </div>
+
+        {/* File Preview */}
+        {selectedFile && (
+          <div className="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+            <h3 className="text-lg font-bold mb-4 text-slate-900 dark:text-white">{t('upload.preview')}</h3>
+            <FilePreview file={selectedFile} />
+          </div>
+        )}
       </div>
 
       {/* Right Column: Extracted Data Preview */}
@@ -255,10 +266,10 @@ const UploadTab = () => {
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200 dark:border-slate-800">
             <h3 className="text-lg font-bold flex items-center gap-2 text-slate-900 dark:text-white">
               <span className="material-symbols-outlined text-primary">data_info_alert</span>
-              Extracted Data
+              {t('upload.extractedData')}
             </h3>
             <span className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">
-              Preview
+              {t('upload.preview')}
             </span>
           </div>
 
@@ -272,7 +283,7 @@ const UploadTab = () => {
           ) : (
             <div className="text-center py-12 text-slate-400 dark:text-slate-500">
               <span className="material-symbols-outlined text-6xl mb-4 opacity-50">description</span>
-              <p className="text-sm">Upload and process an invoice to see extracted data here</p>
+              <p className="text-sm">{t('upload.uploadInstruction')}</p>
             </div>
           )}
         </div>

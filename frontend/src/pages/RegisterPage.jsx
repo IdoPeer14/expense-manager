@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import { registerSchema } from '../utils/validation';
 import Input from '../components/common/Input';
@@ -9,6 +10,7 @@ import Button from '../components/common/Button';
 import ErrorAlert from '../components/common/ErrorAlert';
 
 const RegisterPage = () => {
+  const { t } = useTranslation();
   const [apiError, setApiError] = useState('');
   const { register: registerUser } = useAuth();
   const navigate = useNavigate();
@@ -43,7 +45,7 @@ const RegisterPage = () => {
               <span className="material-symbols-outlined text-2xl">account_balance_wallet</span>
             </div>
             <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-              Expense Manager
+              {t('auth.appTitle') || 'Expense Manager'}
             </h1>
           </div>
         </div>
@@ -54,10 +56,10 @@ const RegisterPage = () => {
             {/* Header */}
             <div className="mb-8 text-center">
               <h2 className="text-2xl font-bold mb-2 text-slate-900 dark:text-white">
-                Create your account
+                {t('auth.createAccountTitle')}
               </h2>
               <p className="text-slate-500 dark:text-slate-400 text-sm">
-                Start managing your expenses and invoices efficiently today.
+                {t('auth.registerSubtitle')}
               </p>
             </div>
 
@@ -65,7 +67,7 @@ const RegisterPage = () => {
             {apiError && (
               <div className="mb-6">
                 <ErrorAlert
-                  title="Registration Failed"
+                  title={t('auth.registerFailed')}
                   message={apiError}
                   onClose={() => setApiError('')}
                 />
@@ -75,7 +77,7 @@ const RegisterPage = () => {
             {/* Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
               <Input
-                label="Email address"
+                label={t('auth.email')}
                 type="email"
                 placeholder="name@company.com"
                 error={errors.email?.message}
@@ -84,7 +86,7 @@ const RegisterPage = () => {
               />
 
               <Input
-                label="Password"
+                label={t('auth.password')}
                 type="password"
                 placeholder="••••••••"
                 error={errors.password?.message}
@@ -93,7 +95,7 @@ const RegisterPage = () => {
               />
 
               <Input
-                label="Confirm Password"
+                label={t('auth.confirmPassword')}
                 type="password"
                 placeholder="••••••••"
                 error={errors.confirmPassword?.message}
@@ -108,7 +110,7 @@ const RegisterPage = () => {
                 loading={isSubmitting}
                 className="w-full mt-2"
               >
-                Create account
+                {t('auth.createAccount')}
               </Button>
             </form>
           </div>
@@ -116,12 +118,12 @@ const RegisterPage = () => {
           {/* Footer */}
           <div className="border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 px-8 py-4 text-center">
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              Already have an account?{' '}
+              {t('auth.haveAccount')}{' '}
               <Link
                 to="/login"
                 className="font-semibold text-primary hover:text-primary-hover hover:underline transition-colors"
               >
-                Log in
+                {t('auth.loginHere')}
               </Link>
             </p>
           </div>

@@ -1,8 +1,11 @@
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import Button from './Button';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const Header = () => {
+  const { t } = useTranslation();
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -22,14 +25,17 @@ const Header = () => {
         </h1>
       </div>
 
-      <Button
-        variant="ghost"
-        size="sm"
-        icon="logout"
-        onClick={handleLogout}
-      >
-        Logout
-      </Button>
+      <div className="flex items-center gap-3">
+        <LanguageSwitcher />
+        <Button
+          variant="ghost"
+          size="sm"
+          icon="logout"
+          onClick={handleLogout}
+        >
+          {t('auth.logout')}
+        </Button>
+      </div>
     </header>
   );
 };

@@ -33,6 +33,10 @@ public class OcrService
             throw new FileNotFoundException($"File not found: {document.StoragePath}");
         }
 
+        // Mark as processing
+        document.ParseStatus = DocumentParseStatus.PROCESSING;
+        await _db.SaveChangesAsync();
+
         try
         {
             // Convert PDF to image if needed
@@ -171,27 +175,50 @@ public class OcrService
         {
             try
             {
-                // Create temporary directory for conversion
-                var tempDir = Path.Combine(Path.GetTempPath(), "expense-manager-ocr");
-                Directory.CreateDirectory(tempDir);
+                // Create cache directory for converted images
+                var cacheDir = Path.Combine(Path.GetTempPath(), "expense-manager-pdf-cache");
+                Directory.CreateDirectory(cacheDir);
 
-                // Generate unique filename for output
-                var outputBaseName = Path.Combine(tempDir, $"pdf_convert_{Guid.NewGuid()}");
+                // Generate cache key based on PDF file hash
+                var pdfHash = GetFileHash(pdfPath);
+                var cachedImagePath = Path.Combine(cacheDir, $"{pdfHash}.png");
+
+                // Check if cached image exists and is newer than PDF
+                if (File.Exists(cachedImagePath))
+                {
+                    var pdfLastModified = File.GetLastWriteTimeUtc(pdfPath);
+                    var cacheLastModified = File.GetLastWriteTimeUtc(cachedImagePath);
+
+                    if (cacheLastModified >= pdfLastModified)
+                    {
+                        _logger.LogInformation("Using cached PDF image: {CachedPath}", cachedImagePath);
+
+                        // Copy to temp location to maintain existing cleanup behavior
+                        var tempPath = Path.Combine(Path.GetTempPath(), $"pdf_convert_{Guid.NewGuid()}.png");
+                        File.Copy(cachedImagePath, tempPath);
+                        return tempPath;
+                    }
+                }
+
+                // Convert PDF to PNG with optimized settings
+                var outputBaseName = Path.Combine(Path.GetTempPath(), $"pdf_convert_{Guid.NewGuid()}");
                 var outputImagePath = $"{outputBaseName}.png";
 
-                // Use pdftoppm to convert PDF to PNG (first page only)
-                // pdftoppm is available via poppler-utils package
+                // Use pdftoppm with optimized parameters:
+                // - Lower DPI (150 instead of default 300) for faster conversion
+                // - JPEG format is faster but PNG is better for OCR
+                // - -f 1 -singlefile: first page only
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = "pdftoppm",
-                    Arguments = $"\"{pdfPath}\" \"{outputBaseName}\" -png -f 1 -singlefile",
+                    Arguments = $"\"{pdfPath}\" \"{outputBaseName}\" -png -f 1 -singlefile -r 150 -gray",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true
                 };
 
-                _logger.LogInformation("Running pdftoppm: {Command} {Arguments}", startInfo.FileName, startInfo.Arguments);
+                _logger.LogInformation("Running optimized pdftoppm: {Command} {Arguments}", startInfo.FileName, startInfo.Arguments);
 
                 using var process = Process.Start(startInfo);
                 if (process == null)
@@ -215,6 +242,17 @@ public class OcrService
                         $"Converted image not found at {outputImagePath}. pdftoppm output: {output}");
                 }
 
+                // Cache the converted image for future use
+                try
+                {
+                    File.Copy(outputImagePath, cachedImagePath, overwrite: true);
+                    _logger.LogDebug("Cached converted image: {CachedPath}", cachedImagePath);
+                }
+                catch (Exception cacheEx)
+                {
+                    _logger.LogWarning(cacheEx, "Failed to cache converted image, continuing anyway");
+                }
+
                 _logger.LogInformation("Successfully converted PDF to image: {ImagePath}", outputImagePath);
                 return outputImagePath;
             }
@@ -224,5 +262,13 @@ public class OcrService
                 throw new InvalidOperationException($"Failed to convert PDF to image: {ex.Message}", ex);
             }
         });
+    }
+
+    private string GetFileHash(string filePath)
+    {
+        using var stream = File.OpenRead(filePath);
+        using var sha256 = System.Security.Cryptography.SHA256.Create();
+        var hashBytes = sha256.ComputeHash(stream);
+        return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
     }
 }

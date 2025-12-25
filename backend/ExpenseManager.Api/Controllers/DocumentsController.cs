@@ -62,6 +62,26 @@ public class DocumentsController : BaseAuthController
         });
     }
 
+    [HttpGet("{id}/status")]
+    public async Task<IActionResult> GetDocumentStatus(Guid id)
+    {
+        var userId = GetCurrentUserId();
+        var document = await _db.Documents.FindAsync(id);
+
+        if (document == null || document.UserId != userId)
+        {
+            return NotFound(new { error = "Document not found." });
+        }
+
+        return Ok(new
+        {
+            documentId = document.Id,
+            status = document.ParseStatus.ToString().ToLower(),
+            error = document.ParseError,
+            hasResults = !string.IsNullOrEmpty(document.ParsedJson)
+        });
+    }
+
     [HttpPost("{id}/analyze")]
     public async Task<IActionResult> AnalyzeDocument(Guid id)
     {
@@ -73,8 +93,47 @@ public class DocumentsController : BaseAuthController
             return NotFound(new { error = "Document not found." });
         }
 
+        // If already processed successfully, return cached results
+        if (document.ParseStatus == DocumentParseStatus.SUCCESS && !string.IsNullOrEmpty(document.ParsedJson))
+        {
+            try
+            {
+                var cachedData = System.Text.Json.JsonSerializer.Deserialize<ParsedInvoiceData>(document.ParsedJson);
+                return Ok(new
+                {
+                    vendorName = cachedData?.BusinessName,
+                    date = cachedData?.TransactionDate?.ToString("yyyy-MM-dd"),
+                    totalAmount = cachedData?.AmountAfterVat ?? cachedData?.AmountBeforeVat ?? 0,
+                    currency = "USD",
+                    description = cachedData?.ServiceDescription,
+                    invoiceNumber = cachedData?.InvoiceNumber,
+                    businessId = cachedData?.BusinessId,
+                    amountBeforeVat = cachedData?.AmountBeforeVat,
+                    amountAfterVat = cachedData?.AmountAfterVat,
+                    vatAmount = cachedData?.VatAmount,
+                    status = "completed",
+                    cached = true
+                });
+            }
+            catch
+            {
+                // If deserialization fails, reprocess
+            }
+        }
+
+        // If currently processing, return processing status
+        if (document.ParseStatus == DocumentParseStatus.PROCESSING)
+        {
+            return Accepted(new
+            {
+                status = "processing",
+                message = "Document is being analyzed. Please check back in a moment."
+            });
+        }
+
         try
         {
+            // Process the document (this is fast now with caching and optimizations)
             var parsedData = await _ocrService.ProcessDocumentAsync(id);
 
             return Ok(new
@@ -84,12 +143,13 @@ public class DocumentsController : BaseAuthController
                 totalAmount = parsedData?.AmountAfterVat ?? parsedData?.AmountBeforeVat ?? 0,
                 currency = "USD",
                 description = parsedData?.ServiceDescription,
-                // Include additional fields for reference
                 invoiceNumber = parsedData?.InvoiceNumber,
                 businessId = parsedData?.BusinessId,
                 amountBeforeVat = parsedData?.AmountBeforeVat,
                 amountAfterVat = parsedData?.AmountAfterVat,
-                vatAmount = parsedData?.VatAmount
+                vatAmount = parsedData?.VatAmount,
+                status = "completed",
+                cached = false
             });
         }
         catch (Exception ex)
@@ -97,7 +157,8 @@ public class DocumentsController : BaseAuthController
             return StatusCode(500, new
             {
                 error = "OCR processing failed",
-                message = ex.Message
+                message = ex.Message,
+                status = "failed"
             });
         }
     }

@@ -1,7 +1,10 @@
 import { NavLink, Outlet, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Header from '../components/common/Header';
 
 const DashboardPage = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark flex flex-col">
       <Header />
@@ -21,7 +24,7 @@ const DashboardPage = () => {
               }
             >
               <span className="material-symbols-outlined text-[20px]">cloud_upload</span>
-              <span>Upload Invoices</span>
+              <span>{t('dashboard.uploadTab')}</span>
             </NavLink>
 
             <NavLink
@@ -35,7 +38,7 @@ const DashboardPage = () => {
               }
             >
               <span className="material-symbols-outlined text-[20px]">receipt_long</span>
-              <span>Expenses Management</span>
+              <span>{t('dashboard.expensesTab')}</span>
             </NavLink>
           </nav>
         </div>
