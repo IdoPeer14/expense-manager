@@ -101,11 +101,12 @@ public class InvoiceParser
 
     private string? ExtractBusinessId(string text)
     {
-        // Hebrew: ח.פ, ע.מ, ע.פ | English: VAT, Tax ID
+        // Hebrew: ח.פ, ע.מ, ע.פ | English: Company ID, Tax ID, VAT ID
         var patterns = new[]
         {
             @"(?:ח\.פ\.|ע\.מ\.|ע\.פ\.)\s*[:\-]?\s*([\d\-]+)",
-            @"(?:VAT|Tax ID)\s*[:\-]?\s*([\d\-]+)"
+            @"(?:Company ID|Tax ID|VAT ID|Business ID)\s*[:\-]?\s*(\d+)",
+            @"(?:ID)\s*[:\-]?\s*(\d{8,})" // At least 8 digits to avoid small numbers
         };
 
         foreach (var pattern in patterns)
@@ -122,17 +123,43 @@ public class InvoiceParser
 
     private string? ExtractBusinessName(string text)
     {
-        // Try to find business name near top of document
-        // Look for lines before invoice number or date
+        // First try to find explicit "Business Name:" pattern
+        var explicitPatterns = new[]
+        {
+            @"(?:Business Name|Company Name|שם העסק)\s*[:\-]?\s*(.+)",
+            @"(?:Name)\s*[:\-]?\s*(.+)"
+        };
+
+        foreach (var pattern in explicitPatterns)
+        {
+            var match = Regex.Match(text, pattern, RegexOptions.IgnoreCase);
+            if (match.Success)
+            {
+                var name = match.Groups[1].Value.Trim();
+                // Make sure it's not a number or too long
+                if (name.Length > 2 && name.Length < 100 && !Regex.IsMatch(name, @"^\d+$"))
+                {
+                    return name;
+                }
+            }
+        }
+
+        // Fallback: Try to find business name near top of document
         var lines = text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
-        foreach (var line in lines.Take(10))
+        foreach (var line in lines.Take(15))
         {
             var trimmed = line.Trim();
             if (trimmed.Length > 3 && trimmed.Length < 100 &&
                 !Regex.IsMatch(trimmed, @"^\d+$") && // Not just numbers
+                !Regex.IsMatch(trimmed, @"^\$") && // Not starting with currency
                 !trimmed.Contains("חשבונית", StringComparison.OrdinalIgnoreCase) &&
-                !trimmed.Contains("invoice", StringComparison.OrdinalIgnoreCase))
+                !trimmed.Contains("invoice", StringComparison.OrdinalIgnoreCase) &&
+                !trimmed.Contains("receipt", StringComparison.OrdinalIgnoreCase) &&
+                !trimmed.Contains("total", StringComparison.OrdinalIgnoreCase) &&
+                !trimmed.Contains("amount", StringComparison.OrdinalIgnoreCase) &&
+                !trimmed.Contains("VAT", StringComparison.OrdinalIgnoreCase) &&
+                !trimmed.Contains("description", StringComparison.OrdinalIgnoreCase))
             {
                 return trimmed;
             }
@@ -148,7 +175,8 @@ public class InvoiceParser
         decimal? vat = null;
 
         // Extract all monetary values (supports ₪, $, NIS, comma/dot separators)
-        var amountPattern = @"(?:₪|NIS|\$)?\s*([\d,]+\.?\d*)";
+        // Only match amounts that have currency symbols or are near amount keywords
+        var amountPattern = @"(?:₪|NIS|\$)\s*([\d,]+\.?\d*)";
         var amounts = new List<decimal>();
 
         foreach (Match match in Regex.Matches(text, amountPattern))
@@ -156,13 +184,39 @@ public class InvoiceParser
             var valueStr = match.Groups[1].Value.Replace(",", "");
             if (decimal.TryParse(valueStr, NumberStyles.Any, CultureInfo.InvariantCulture, out var value))
             {
-                amounts.Add(value);
+                // Skip very large numbers that are likely IDs (> 100000)
+                if (value < 100000)
+                {
+                    amounts.Add(value);
+                }
+            }
+        }
+
+        // Look for "Before VAT" amount first
+        var beforeVatPatterns = new[]
+        {
+            @"(?:Amount|Sum|Total)?\s*\(?Before VAT\)?\s*[:\-]?\s*(?:₪|NIS|\$)?\s*([\d,]+\.?\d*)",
+            @"(?:לפני מע""מ)\s*[:\-]?\s*(?:₪|NIS|\$)?\s*([\d,]+\.?\d*)"
+        };
+
+        foreach (var pattern in beforeVatPatterns)
+        {
+            var match = Regex.Match(text, pattern, RegexOptions.IgnoreCase);
+            if (match.Success)
+            {
+                var valueStr = match.Groups[1].Value.Replace(",", "");
+                if (decimal.TryParse(valueStr, NumberStyles.Any, CultureInfo.InvariantCulture, out var value))
+                {
+                    beforeVat = value;
+                    break;
+                }
             }
         }
 
         // Look for VAT keywords
         var vatPatterns = new[]
         {
+            @"VAT\s*\([\d]+%\)\s*[:\-]?\s*(?:₪|NIS|\$)?\s*([\d,]+\.?\d*)",
             @"(?:מע""מ|VAT|tax)\s*[:\-]?\s*(?:₪|NIS|\$)?\s*([\d,]+\.?\d*)",
             @"([\d,]+\.?\d*)\s*(?:מע""מ|VAT)"
         };
@@ -181,9 +235,10 @@ public class InvoiceParser
             }
         }
 
-        // Look for total keywords
+        // Look for total keywords (Total Due, Total Amount, etc.)
         var totalPatterns = new[]
         {
+            @"(?:Total Due|Total Amount|Grand Total)\s*[:\-]?\s*(?:₪|NIS|\$)?\s*([\d,]+\.?\d*)",
             @"(?:סה""כ|total|sum|סכום)\s*[:\-]?\s*(?:₪|NIS|\$)?\s*([\d,]+\.?\d*)",
             @"([\d,]+\.?\d*)\s*(?:סה""כ|total)"
         };
@@ -221,16 +276,36 @@ public class InvoiceParser
 
     private string? ExtractServiceDescription(string text)
     {
-        // Look for lines that might describe services
-        // This is a simple heuristic - can be improved
+        // First try explicit description patterns
+        var explicitPatterns = new[]
+        {
+            @"(?:Description|תיאור)\s*[:\-]?\s*\n\s*(.+)",
+            @"(?:Service|שירות)\s*[:\-]?\s*(.+)"
+        };
+
+        foreach (var pattern in explicitPatterns)
+        {
+            var match = Regex.Match(text, pattern, RegexOptions.IgnoreCase);
+            if (match.Success)
+            {
+                var desc = match.Groups[1].Value.Trim();
+                if (desc.Length > 3 && desc.Length < 200)
+                {
+                    return desc;
+                }
+            }
+        }
+
+        // Fallback: Look for lines that might describe services
         var lines = text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
         foreach (var line in lines)
         {
             var trimmed = line.Trim();
             if (trimmed.Length > 10 && trimmed.Length < 200 &&
-                (trimmed.Contains("שירות") || trimmed.Contains("service") ||
-                 trimmed.Contains("מוצר") || trimmed.Contains("product")))
+                (trimmed.Contains("שירות") || trimmed.Contains("service", StringComparison.OrdinalIgnoreCase) ||
+                 trimmed.Contains("מוצר") || trimmed.Contains("product", StringComparison.OrdinalIgnoreCase) ||
+                 trimmed.Contains("development", StringComparison.OrdinalIgnoreCase)))
             {
                 return trimmed;
             }
