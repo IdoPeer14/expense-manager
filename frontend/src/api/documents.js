@@ -21,7 +21,10 @@ export const uploadDocument = async (file) => {
  * @returns {Promise<Object>} Extracted data from OCR
  */
 export const analyzeDocument = async (documentId) => {
-  const response = await apiClient.post(`/documents/${documentId}/analyze`);
+  // OCR processing can take longer, increase timeout to 2 minutes
+  const response = await apiClient.post(`/documents/${documentId}/analyze`, null, {
+    timeout: 120000, // 2 minutes
+  });
   return response.data;
 };
 

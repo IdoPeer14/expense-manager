@@ -79,14 +79,17 @@ public class DocumentsController : BaseAuthController
 
             return Ok(new
             {
-                businessName = parsedData?.BusinessName,
-                transactionDate = parsedData?.TransactionDate,
+                vendorName = parsedData?.BusinessName,
+                date = parsedData?.TransactionDate?.ToString("yyyy-MM-dd"),
+                totalAmount = parsedData?.AmountAfterVat ?? parsedData?.AmountBeforeVat ?? 0,
+                currency = "USD",
+                description = parsedData?.ServiceDescription,
+                // Include additional fields for reference
+                invoiceNumber = parsedData?.InvoiceNumber,
+                businessId = parsedData?.BusinessId,
                 amountBeforeVat = parsedData?.AmountBeforeVat,
                 amountAfterVat = parsedData?.AmountAfterVat,
-                vatAmount = parsedData?.VatAmount,
-                businessId = parsedData?.BusinessId,
-                invoiceNumber = parsedData?.InvoiceNumber,
-                serviceDescription = parsedData?.ServiceDescription
+                vatAmount = parsedData?.VatAmount
             });
         }
         catch (Exception ex)
