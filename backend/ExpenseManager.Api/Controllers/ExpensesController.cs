@@ -28,6 +28,11 @@ public class ExpensesController : BaseAuthController
             return BadRequest(new { error = "Business name is required." });
         }
 
+        // Ensure DateTime is in UTC for PostgreSQL
+        var transactionDate = request.TransactionDate.Kind == DateTimeKind.Unspecified
+            ? DateTime.SpecifyKind(request.TransactionDate, DateTimeKind.Utc)
+            : request.TransactionDate.ToUniversalTime();
+
         var expense = new Expense
         {
             UserId = userId,
@@ -36,7 +41,7 @@ public class ExpensesController : BaseAuthController
             BusinessId = request.BusinessId,
             InvoiceNumber = request.InvoiceNumber,
             ServiceDescription = request.ServiceDescription,
-            TransactionDate = request.TransactionDate,
+            TransactionDate = transactionDate,
             AmountBeforeVat = request.AmountBeforeVat,
             AmountAfterVat = request.AmountAfterVat,
             VatAmount = request.VatAmount,
