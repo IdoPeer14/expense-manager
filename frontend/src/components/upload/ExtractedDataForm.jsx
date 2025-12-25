@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -20,17 +21,32 @@ const ExtractedDataForm = ({ data, onSave, onDiscard, loading }) => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
-      vendorName: data?.vendorName || '',
-      date: data?.date || '',
-      totalAmount: data?.totalAmount || 0,
-      currency: data?.currency || 'USD',
-      description: data?.description || '',
+      vendorName: '',
+      date: '',
+      totalAmount: 0,
+      currency: 'USD',
+      description: '',
       category: 'OTHER',
     },
   });
+
+  // Update form when data changes
+  useEffect(() => {
+    if (data) {
+      reset({
+        vendorName: data.vendorName || '',
+        date: data.date || '',
+        totalAmount: data.totalAmount || 0,
+        currency: data.currency || 'USD',
+        description: data.description || '',
+        category: 'OTHER',
+      });
+    }
+  }, [data, reset]);
 
   const onSubmit = (formData) => {
     onSave(formData);

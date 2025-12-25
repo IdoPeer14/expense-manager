@@ -49,17 +49,18 @@ public class ExpensesController : BaseAuthController
         return Ok(new
         {
             id = expense.Id,
+            vendorName = expense.BusinessName,
+            date = expense.TransactionDate,
+            totalAmount = expense.AmountAfterVat,
+            invoiceNumber = expense.InvoiceNumber,
+            category = expense.Category.ToString(),
+            // Additional fields
             userId = expense.UserId,
             documentId = expense.DocumentId,
-            businessName = expense.BusinessName,
             businessId = expense.BusinessId,
-            invoiceNumber = expense.InvoiceNumber,
-            serviceDescription = expense.ServiceDescription,
-            transactionDate = expense.TransactionDate,
+            description = expense.ServiceDescription,
             amountBeforeVat = expense.AmountBeforeVat,
-            amountAfterVat = expense.AmountAfterVat,
             vatAmount = expense.VatAmount,
-            category = expense.Category.ToString(),
             createdAt = expense.CreatedAt,
             updatedAt = expense.UpdatedAt
         });
@@ -107,22 +108,23 @@ public class ExpensesController : BaseAuthController
             .Select(e => new
             {
                 id = e.Id,
-                documentId = e.DocumentId,
-                businessName = e.BusinessName,
-                businessId = e.BusinessId,
+                vendorName = e.BusinessName,
+                date = e.TransactionDate,
+                totalAmount = e.AmountAfterVat,
                 invoiceNumber = e.InvoiceNumber,
-                serviceDescription = e.ServiceDescription,
-                transactionDate = e.TransactionDate,
-                amountBeforeVat = e.AmountBeforeVat,
-                amountAfterVat = e.AmountAfterVat,
-                vatAmount = e.VatAmount,
                 category = e.Category.ToString(),
+                // Additional fields
+                documentId = e.DocumentId,
+                businessId = e.BusinessId,
+                description = e.ServiceDescription,
+                amountBeforeVat = e.AmountBeforeVat,
+                vatAmount = e.VatAmount,
                 createdAt = e.CreatedAt,
                 updatedAt = e.UpdatedAt
             })
             .ToListAsync();
 
-        return Ok(expenses);
+        return Ok(new { data = expenses, pagination = new { totalCount = expenses.Count } });
     }
 
     [HttpPatch("{id}")]

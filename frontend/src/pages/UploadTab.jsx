@@ -107,7 +107,21 @@ const UploadTab = () => {
     setSuccess('');
 
     try {
-      await createExpenseMutation.mutateAsync(formData);
+      // Transform frontend data to match backend API expectations
+      const expenseData = {
+        businessName: formData.vendorName,
+        transactionDate: formData.date,
+        amountBeforeVat: formData.totalAmount * 0.83, // Estimate (assuming ~17% VAT)
+        amountAfterVat: formData.totalAmount,
+        vatAmount: formData.totalAmount * 0.17, // Estimate
+        serviceDescription: formData.description,
+        category: formData.category,
+        businessId: null,
+        invoiceNumber: null,
+        documentId: null,
+      };
+
+      await createExpenseMutation.mutateAsync(expenseData);
       setSuccess('Expense saved successfully!');
 
       // Reset form after short delay
