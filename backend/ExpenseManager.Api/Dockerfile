@@ -26,6 +26,15 @@ RUN apt-get update && apt-get install -y \
     libtesseract-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Set TESSDATA_PREFIX environment variable for Tesseract
+ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata
+
+# Debug: Check where tessdata actually is
+RUN echo "=== Checking Tesseract installation ===" && \
+    tesseract --version && \
+    find /usr -name "*.traineddata" 2>/dev/null | head -10 && \
+    echo "=== End Tesseract check ==="
+
 COPY --from=build /app/out .
 
 # Render listens on port 8080

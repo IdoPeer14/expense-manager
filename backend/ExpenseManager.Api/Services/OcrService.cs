@@ -72,15 +72,26 @@ public class OcrService
             try
             {
                 // Initialize Tesseract with Hebrew and English
-                // Try multiple possible tessdata locations
-                var possiblePaths = new[]
+                // First check TESSDATA_PREFIX environment variable
+                var envTessdata = Environment.GetEnvironmentVariable("TESSDATA_PREFIX");
+
+                var possiblePaths = new List<string>();
+
+                // Add env variable path first if set
+                if (!string.IsNullOrEmpty(envTessdata))
+                {
+                    possiblePaths.Add(envTessdata);
+                }
+
+                // Add standard locations
+                possiblePaths.AddRange(new[]
                 {
                     "/usr/share/tesseract-ocr/tessdata",        // Standard Debian/Ubuntu location (apt install)
                     "/usr/share/tessdata",                      // Alternative Linux location
                     "/usr/share/tesseract-ocr/5.00/tessdata",   // Versioned Tesseract 5.x
                     "/usr/share/tesseract-ocr/4.00/tessdata",   // Versioned Tesseract 4.x
                     Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tessdata")  // Local development
-                };
+                });
 
                 string? tessdataPath = null;
                 foreach (var path in possiblePaths)
@@ -91,12 +102,16 @@ public class OcrService
                         _logger.LogInformation("Found tessdata at: {TessdataPath}", path);
                         break;
                     }
+                    else
+                    {
+                        _logger.LogDebug("Tessdata not found at: {Path}", path);
+                    }
                 }
 
                 if (tessdataPath == null)
                 {
                     throw new DirectoryNotFoundException(
-                        $"Tessdata directory not found. Searched: {string.Join(", ", possiblePaths)}");
+                        $"Tessdata directory not found. TESSDATA_PREFIX={envTessdata}. Searched: {string.Join(", ", possiblePaths)}");
                 }
 
                 using var engine = new TesseractEngine(tessdataPath, "heb+eng", EngineMode.Default);
